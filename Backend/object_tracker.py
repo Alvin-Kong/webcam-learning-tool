@@ -3,6 +3,8 @@ import sys
 
 if __name__ == '__main__':
 
+    draw = False
+
     # Declare video capture device (webcam)
     capture = cv2.VideoCapture(0)
 
@@ -29,15 +31,18 @@ if __name__ == '__main__':
         p2 = (x + width, y + height)
         cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 
-    # Function to get the center of boundary box
-    def getCenter(frame, bbox):
+    # Function to get the center of boundary box and draw lines according to the center of the boundary box
+    def drawLine(frame, bbox):
         x = int(bbox[0])
         y = int(bbox[1])
         width = int(bbox[2])
         height = int(bbox[3])
         xCenter = x + (width / 2)
         yCenter = y + (height /2)
-        cv2.putText(frame, "Center: " + str(int(xCenter)) + ", " + str(int(yCenter)), (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+        p1 = (xCenter, yCenter)
+        p2 = (xCenter, yCenter)
+        cv2.putText(frame, "Center: " + str(int(xCenter)) + ", " + str(int(yCenter)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+        #cv2.line(frame, (xCenter, yCenter), (xCenter, yCenter), (180, 0, 0), 2, 1)
 
     # Loop to maintain video capture device input and display
     while(capture.isOpened()):
@@ -57,16 +62,20 @@ if __name__ == '__main__':
         # Display 'Tracking' if tracking is successful and 'Lost' if tracking is unsuccessful
         if ret:
             drawObjectBox(frame, bbox)
-            cv2.putText(frame, "Tracking", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+            cv2.putText(frame, "Tracking", (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
         else:
-            cv2.putText(frame, "Lost", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+            cv2.putText(frame, "Lost", (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
         # Calculate and display frames per second (FPS)
         fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
         cv2.putText(frame, "FPS : " + str(int(fps)), (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
-        # Display the center of the boundary box
-        getCenter(frame, bbox)
+        # Draw lines according to the position of the center of the boundary box and display the center of the boundary box
+        if draw == True:
+            drawLine(frame, bbox)
+            cv2.putText(frame, "Drawing", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+        else:
+            cv2.putText(frame, "Stopped", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
 
         # Change video capture input to grayscale
         #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -74,6 +83,13 @@ if __name__ == '__main__':
         # Display video capture
         #cv2.imshow('object-tracker', gray)
         cv2.imshow('object-tracker', frame)
+
+        # Toggle drawing (activation of drawing pen)
+        if cv2.waitKey(1) & 0xFF == ord(' '):
+            if draw == True:
+                draw = False
+            else:
+                draw = True
 
         # Press 'esc' key to exit
         if cv2.waitKey(1) & 0xFF == 27:
