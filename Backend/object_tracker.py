@@ -8,12 +8,11 @@ if __name__ == '__main__':
 
     # Check video capture device works
     if not capture.isOpened():
-        print 
-        "Could not open video capture device"
+        print("Could not open video capture device")
         sys.exit()
 
     # Declare the type of tracking used
-    tracker = cv2.TrackerKCF_create()
+    tracker = cv2.TrackerCSRT_create()
 
     # Read the first frame and initialize the boundary box for the tracker
     ret, frame = capture.read()
@@ -30,7 +29,7 @@ if __name__ == '__main__':
         p2 = (x + width, y + height)
         cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 
-    #Function to get the center of boundary box
+    # Function to get the center of boundary box
     def getCenter(frame, bbox):
         x = int(bbox[0])
         y = int(bbox[1])
@@ -59,7 +58,6 @@ if __name__ == '__main__':
         if ret:
             drawObjectBox(frame, bbox)
             cv2.putText(frame, "Tracking", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-
         else:
             cv2.putText(frame, "Lost", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
 
