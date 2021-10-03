@@ -1,8 +1,43 @@
 import cv2
 import sys
 
-if __name__ == '__main__':
+# Function to draw a rectangle to define the boundary box
+def drawObjectBox(frame, bbox):
+    x = int(bbox[0])
+    y = int(bbox[1])
+    width = int(bbox[2])
+    height = int(bbox[3])
+    p1 = (x, y)
+    p2 = (x + width, y + height)
+    cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 
+
+# Function to get the center of boundary box
+def getCenter(frame, bbox):
+    x = getXCenter(bbox)
+    y = getYCenter(bbox)
+    center = (x, y)
+    cv2.putText(frame, "Center: " + str(int(x)) + ", " + str(int(y)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+    return center
+
+
+# Function to get the x coordinate of the center of the boundary box
+def getXCenter(bbox):
+    x = int(bbox[0])
+    width = int(bbox[2])
+    xCenter = x + (width / 2)
+    return xCenter
+
+
+# Function to get the y coordinate of the center of the boundary box
+def getYCenter(bbox):
+    y = int(bbox[1])
+    height = int(bbox[3])
+    yCenter = y + (height / 2)
+    return yCenter
+
+
+if __name__ == '__main__':
     draw = False
 
     # Declare video capture device (webcam)
@@ -21,36 +56,6 @@ if __name__ == '__main__':
     bbox = cv2.selectROI(frame, False)
     tracker.init(frame, bbox)
 
-    # Function to draw a rectangle to define the boundary box
-    def drawObjectBox(frame, bbox):
-        x = int(bbox[0])
-        y = int(bbox[1])
-        width = int(bbox[2])
-        height = int(bbox[3])
-        p1 = (x, y)
-        p2 = (x + width, y + height)
-        cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
-
-    # Function to get the center of boundary box
-    def getCenter(frame, bbox):
-        x = getXCenter(bbox)
-        y = getYCenter(bbox)
-        center = (x, y)
-        cv2.putText(frame, "Center: " + str(int(x)) + ", " + str(int(y)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-        return center
-
-    def getXCenter(bbox):
-        x = int(bbox[0])
-        width = int(bbox[2])
-        xCenter = x + (width / 2)
-        return xCenter
-
-    def getYCenter(bbox):
-        y = int(bbox[1])
-        height = int(bbox[3])
-        yCenter = y + (height / 2)
-        return yCenter
-
     # Loop to maintain video capture device input and display
     while(capture.isOpened()):
         timer = cv2.getTickCount()
@@ -59,7 +64,7 @@ if __name__ == '__main__':
         # ret will return 'True' if video caputre is good and 'False' if video capture is bad
         if not ret:
             break
-        
+
         # Update the tracker every frame
         ret, bbox = tracker.update(frame)
         
