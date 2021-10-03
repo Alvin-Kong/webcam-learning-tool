@@ -1,5 +1,6 @@
 import cv2
 import sys
+import util
 
 # Function to draw a rectangle to define the boundary box
 def drawObjectBox(frame, bbox):
@@ -10,31 +11,6 @@ def drawObjectBox(frame, bbox):
     p1 = (x, y)
     p2 = (x + width, y + height)
     cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
-
-
-# Function to get the center of boundary box
-def getCenter(frame, bbox):
-    x = getXCenter(bbox)
-    y = getYCenter(bbox)
-    center = (x, y)
-    cv2.putText(frame, "Center: " + str(int(x)) + ", " + str(int(y)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-    return center
-
-
-# Function to get the x coordinate of the center of the boundary box
-def getXCenter(bbox):
-    x = int(bbox[0])
-    width = int(bbox[2])
-    xCenter = x + (width / 2)
-    return xCenter
-
-
-# Function to get the y coordinate of the center of the boundary box
-def getYCenter(bbox):
-    y = int(bbox[1])
-    height = int(bbox[3])
-    yCenter = y + (height / 2)
-    return yCenter
 
 
 if __name__ == '__main__':
@@ -84,7 +60,7 @@ if __name__ == '__main__':
 
         # Draw lines according to the position of the center of the boundary box and display the center of the boundary box
         if draw == True:
-            getCenter(frame, bbox)
+            util.getCenter(frame, bbox)
             cv2.putText(frame, "Drawing", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
         else:
             cv2.putText(frame, "Stopped", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
