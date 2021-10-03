@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas</title>
+    <style>
+        #canvas {
+            display: block;
+            border: 1px solid black;
+            
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<canvas id="canvas" width='800px' height='600px'>canvas</canvas>
+<div id="position"></div>
+</body>
+<script>
+    /* ------------------------------Define Canvas-------------------------------*/
+    var text = document.getElementById("position");
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext('2d');
+    /* -----------------Initialize Attributes----------------*/
+    ctx.lineWidth = 3; 
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
+    // define flag to stop draw 1-draw 0-stop draw
+    var flag = 0;
+    /* -----------------Mouse Functions----------------*/
+    /* -----Mouse move-----*/
+    canvas.onmousemove = function (e) {
+        var x = changePos(e)[0];
+        var y = changePos(e)[1];
+        var str = '(' + x + ',' + y + ')'; 
+        // indentify content in str 
+        text.innerHTML = str;
+        if (flag == 1) {
+            ctx.lineTo(x - canvas.offsetLeft, y - canvas.offsetTop);
+            ctx.stroke();
+        }
+        // check out of boundary
+        if (x >= 799 || y >= 599) {
+            // stop drawing 
+            flag = 0;
+        }
+    }
+
+    /* -----Mouse down-----*/
+    canvas.onmousedown = function (e) {
+        flag = 1;
+        var x = changePos(e)[0];
+        var y = changePos(e)[1];
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 1, y + 1); 
+    }
+
+    /* -----Mouse up-----*/
+    canvas.onmouseup = function () {
+        flag = 0;
+    }
+
+    /* -----Chnage postion -----*/
+    function changePos(e) {
+        var Event = e;
+        var pos = [];
+        var scrollTop =  document.body.scrollTop; //number of pixels to top 
+        var scrollLeft =  document.body.scrollLeft; //number of pixels to left 
+        var top = Event.clientY + scrollTop; //clientY is 0 as default 
+        var left = Event.clientX + scrollLeft; //clientX is 0 as default 
+        pos[0] = left;
+        pos[1] = top;
+        return pos;
+
+    }
+</script>
+</html>
