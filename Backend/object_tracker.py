@@ -31,18 +31,25 @@ if __name__ == '__main__':
         p2 = (x + width, y + height)
         cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 
-    # Function to get the center of boundary box and draw lines according to the center of the boundary box
-    def drawLine(frame, bbox):
+    # Function to get the center of boundary box
+    def getCenter(frame, bbox):
+        x = getXCenter(bbox)
+        y = getYCenter(bbox)
+        center = (x, y)
+        cv2.putText(frame, "Center: " + str(int(x)) + ", " + str(int(y)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+        return center
+
+    def getXCenter(bbox):
         x = int(bbox[0])
-        y = int(bbox[1])
         width = int(bbox[2])
-        height = int(bbox[3])
         xCenter = x + (width / 2)
-        yCenter = y + (height /2)
-        p1 = (xCenter, yCenter)
-        p2 = (xCenter, yCenter)
-        cv2.putText(frame, "Center: " + str(int(xCenter)) + ", " + str(int(yCenter)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-        #cv2.line(frame, (xCenter, yCenter), (xCenter, yCenter), (180, 0, 0), 2, 1)
+        return xCenter
+
+    def getYCenter(bbox):
+        y = int(bbox[1])
+        height = int(bbox[3])
+        yCenter = y + (height / 2)
+        return yCenter
 
     # Loop to maintain video capture device input and display
     while(capture.isOpened()):
@@ -72,7 +79,7 @@ if __name__ == '__main__':
 
         # Draw lines according to the position of the center of the boundary box and display the center of the boundary box
         if draw == True:
-            drawLine(frame, bbox)
+            getCenter(frame, bbox)
             cv2.putText(frame, "Drawing", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
         else:
             cv2.putText(frame, "Stopped", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
