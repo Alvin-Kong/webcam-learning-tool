@@ -1,12 +1,18 @@
 import cv2
+import object_tracker
+
+def getFrame():
+    return object_tracker.getFrame()
+
+def getBBox():
+    return object_tracker.getBBox()
+
 
 # Function to get the center of boundary box
-def getCenter(frame, bbox):
-    x = getXCenter(bbox)
-    y = getYCenter(bbox)
-    center = (x, y)
-    cv2.putText(frame, "Center: " + str(int(x)) + ", " + str(int(y)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-    return center
+def getCenter(bbox):
+    xcenter = getXCenter(bbox)
+    ycenter = getYCenter(bbox)
+    return xcenter, ycenter
 
 
 # Function to get the x coordinate of the center of the boundary box
