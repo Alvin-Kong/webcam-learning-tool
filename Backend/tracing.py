@@ -49,23 +49,37 @@ def siftImage(originalImage, testImage):
 
 if __name__ == '__main__':
     original = cv2.imread("tracing/index.png")
-    traced = cv2.imread("tracing/indexTraced4.png")
-    sought = [0, 0, 0]
+    traced = cv2.imread("tracing/indexTraced.png")
+    error = cv2.imread("tracing/range.png")
+
+    black = [0, 0, 0]
+    white = [255,255,255]
 
     removeOutline(traced)
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
+    error_diff = cv2.subtract(error, traced)
+    total_diff = diff - error_diff
 
-    diff_count = np.count_nonzero(np.all(diff != sought, 2))
+    diff_count = np.count_nonzero(np.all(diff != black, 2))
     print(diff_count)
 
-    traced_count = np.count_nonzero(np.all(traced == sought, 2))
+    error_count = np.count_nonzero(np.all(error_diff != black, 2))
+    print(error_count)
+
+    real_difference = diff_count - error_count
+
+    traced_count = np.count_nonzero(np.all(traced != white, 2))
     print(traced_count)
 
 
 
+
     # siftImage()
+    cv2.imshow('ErrorRange', error)
+    cv2.imshow('ErrorDifference', error_diff)
+    cv2.imshow('TotalDifference', total_diff)
     cv2.imshow('Difference', diff)
     cv2.imshow('original', original)
     cv2.imshow('traced', traced)
