@@ -3,23 +3,23 @@ import cv2
 import numpy as np
 
 
-def removeOutline():
-    gray = cv2.cvtColor(traced, cv2.COLOR_BGR2GRAY)
+def removeOutline(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     threshold_level = 30
     mask = gray < threshold_level
-    traced[mask] = (255, 255, 255)
+    image[mask] = (255, 255, 255)
 
 
-def validateImages(original, tracedImage):
-    if original.shape == tracedImage.shape:
+def validateImages(originalImage, tracedImage):
+    if originalImage.shape == tracedImage.shape:
         print("same size")
 
 
-def siftImage():
+def siftImage(originalImage, testImage):
     sift = cv2.SIFT_create()
 
-    kp_1, desc_1 = sift.detectAndCompute(original, None)
-    kp_2, desc_2 = sift.detectAndCompute(traced, None)
+    kp_1, desc_1 = sift.detectAndCompute(originalImage, None)
+    kp_2, desc_2 = sift.detectAndCompute(testImage, None)
 
     print(len(kp_1))
     print(len(kp_2))
@@ -34,7 +34,7 @@ def siftImage():
     for r, c in matches:
         if r.distance < 0.60 * c.distance:
             points.append(r)
-    better = cv2.drawMatches(original, kp_1, traced, kp_2, points, None)
+    better = cv2.drawMatches(originalImage, kp_1, testImage, kp_2, points, None)
     print(len(points))
 
     if len(kp_1) <= len(kp_2):
@@ -49,21 +49,24 @@ def siftImage():
 
 if __name__ == '__main__':
     original = cv2.imread("tracing/index.png")
-    traced = cv2.imread("tracing/duplicate.png")
+    traced = cv2.imread("tracing/indexTraced4.png")
+    sought = [0, 0, 0]
 
-    if original.shape == traced.shape:
-        diff = cv2.subtract(original, traced)
-        cv2.imshow('Difference', diff)
-        print(len(diff))
-
+    removeOutline(traced)
     validateImages(original, traced)
 
-    siftImage()
+    diff = cv2.subtract(original, traced)
 
-    removeOutline()
+    diff_count = np.count_nonzero(np.all(diff != sought, 2))
+    print(diff_count)
 
-    #siftImage()
+    traced_count = np.count_nonzero(np.all(traced == sought, 2))
+    print(traced_count)
 
+
+
+    # siftImage()
+    cv2.imshow('Difference', diff)
     cv2.imshow('original', original)
     cv2.imshow('traced', traced)
 
