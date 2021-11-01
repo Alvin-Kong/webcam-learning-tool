@@ -15,6 +15,7 @@ def validateImages(originalImage, tracedImage):
         print("same size")
 
 
+"""
 def siftImage(originalImage, testImage):
     sift = cv2.SIFT_create()
 
@@ -45,44 +46,44 @@ def siftImage(originalImage, testImage):
     print("How good of a match: " + str(len(points) / key_points * 100))
 
     cv2.imshow("better", better)
-
+"""
 
 if __name__ == '__main__':
     original = cv2.imread("tracing/index.png")
-    traced = cv2.imread("tracing/indexTraced.png")
+    traced = cv2.imread("tracing/indexTraced5.png")
+    original_traced = copy(traced)
     error = cv2.imread("tracing/range.png")
 
     black = [0, 0, 0]
-    white = [255,255,255]
+    white = [255, 255, 255]
 
     removeOutline(traced)
+
+    added_image = cv2.addWeighted(error, 0.4, traced, 0.1, 0)
+    cv2.imwrite('combined.png', added_image)
+
+    cv2.imshow("combined", added_image)
+
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
     error_diff = cv2.subtract(error, traced)
-    total_diff = diff - error_diff
-
-    diff_count = np.count_nonzero(np.all(diff != black, 2))
-    print(diff_count)
 
     error_count = np.count_nonzero(np.all(error_diff != black, 2))
     print(error_count)
 
-    real_difference = diff_count - error_count
-
     traced_count = np.count_nonzero(np.all(traced != white, 2))
     print(traced_count)
 
+    print(((traced_count - error_count) / traced_count) * 100)
 
-
-
-    # siftImage()
     cv2.imshow('ErrorRange', error)
     cv2.imshow('ErrorDifference', error_diff)
-    cv2.imshow('TotalDifference', total_diff)
     cv2.imshow('Difference', diff)
     cv2.imshow('original', original)
     cv2.imshow('traced', traced)
+    cv2.imshow('tracedOriginal', original_traced)
+
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
