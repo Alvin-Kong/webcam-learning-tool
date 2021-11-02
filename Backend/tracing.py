@@ -58,32 +58,64 @@ if __name__ == '__main__':
     white = [255, 255, 255]
 
     removeOutline(traced)
-
-    added_image = cv2.addWeighted(error, 0.4, traced, 0.1, 0)
-    cv2.imwrite('combined.png', added_image)
-
-    cv2.imshow("combined", added_image)
-
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
+
+    original_count = np.count_nonzero(np.all(original != white, 2))
+    traced_count = np.count_nonzero(np.all(traced != white, 2))
+    diff_count = np.count_nonzero(np.all(diff != black, 2))
+
+
+#    error_diff = cv2.subtract(error, traced)
+#    error_count = np.count_nonzero(np.all(error_diff != black, 2))
+
+    """
+    added_image = cv2.addWeighted(error, 0.2, traced, 0.5, 0)
+    cv2.imshow("combined", added_image)
+
+    
+
+    
     error_diff = cv2.subtract(error, traced)
 
     error_count = np.count_nonzero(np.all(error_diff != black, 2))
     print(error_count)
 
+    original_count = np.count_nonzero(np.all(original != white, 2))
+    print(original_count)
+
+    original_error = np.count_nonzero(np.all(error != white, 2))
+    print(original_error)
+
     traced_count = np.count_nonzero(np.all(traced != white, 2))
     print(traced_count)
 
-    print(((traced_count - error_count) / traced_count) * 100)
+    diff_count = np.count_nonzero(np.all(diff != black, 2))
+    """
 
-    cv2.imshow('ErrorRange', error)
-    cv2.imshow('ErrorDifference', error_diff)
+    error_val = 10
+    if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
+        print("INVALID")
+    else:
+        """
+        error_percent = ((traced_count - error_count) / original_count) * 100
+        print("ERROR PERCENT: " + str(error_percent))
+        print((error_count / original_count + traced_count / original_count) * 100)
+        print("CORRECT CALCULATION: " + str(((traced_count - error_count) / (original_count-error_count)) * 100))
+        print(((traced_count - error_count) / traced_count) + (traced_count - error_count) / original_count * 100)
+        """
+        if ((1 - (diff_count / original_count)) * 100 + error_val) >= 100:
+            print(100)
+        else:
+            print(((1 - (diff_count / original_count)) * 100 + error_val))
+
+    # cv2.imshow('ErrorRange', error)
+    # cv2.imshow('ErrorDifference', error_diff)
     cv2.imshow('Difference', diff)
     cv2.imshow('original', original)
     cv2.imshow('traced', traced)
     cv2.imshow('tracedOriginal', original_traced)
-
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
