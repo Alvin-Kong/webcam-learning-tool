@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+    <title>Webcam Learning Tool</title>
+</head>
+<body style="border: 0; margin: 40px;">
+    <script>
+        // get data from local API
+        const api_url = 'http://127.0.0.1:5000/';
+        async function getData() {
+            let response = await axios.get(api_url)
+            .catch(function(error) {
+                console.log(error);
+                alert(error);
+            });
+            console.log(response)
+            return response;
+        }
+
+        getData()
+    </script>
+</body>
+</html>

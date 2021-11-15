@@ -2,10 +2,14 @@ import cv2
 import object_tracker
 
 def getFrame():
-    return object_tracker.getFrame()
+    frame = object_tracker.getFrame()
+    print(frame)
+    return frame
 
 def getBBox():
-    return object_tracker.getBBox()
+    bbox = object_tracker.getBBox()
+    print(bbox)
+    return bbox
 
 
 # Function to get the center of boundary box
