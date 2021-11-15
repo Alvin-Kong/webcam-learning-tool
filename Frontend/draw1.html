@@ -66,6 +66,29 @@
         context.closePath();
       }
 
+      function getCenter(){
+        const express = require('express');
+        const {spawn} = require('child_process');
+        const app = express();
+        const port = 5000;
+
+        app.get('/', (req, res) => {
+          var dataset = [];
+          const python = spawn('python', ['../Backend/get_center.py']);
+          python.stdout.on('data', function (data) {
+            console.log('Pipe data from python scrupt ...');
+            dataset.push(data);
+          });
+          
+          python.on('close', (code) => {
+            console.log(`child process close all stdio with code ${code}`);
+            res.send(dataset.join(""))
+          });
+        });
+
+        app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+      }
+
     </script>
   </body>
 </html>
