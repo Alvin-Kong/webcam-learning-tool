@@ -1,0 +1,81 @@
+/* set all label's margin and padding to z0 */
+* {
+    margin: 0;
+    padding: 0;
+    /* css3 box model */
+    box-sizing: border-box;
+}
+/* em and i never incline */
+em,
+i {
+    font-style: normal
+}
+/* remove point befefore li  */
+li {
+    list-style: none
+}
+
+.fl{
+    float: left;
+}
+
+.fr{
+    float: right;
+}
+
+img {
+    /* border 0 care low version browsers. If the picture contains a link, there will be a frame problem*/
+    border: 0;
+    /* Cancel the problem of blank gaps on the bottom side of the picture*/
+    vertical-align: middle
+}
+
+button {
+    /* mouse pass button becomes small hand  */
+    cursor: pointer
+}
+
+    /* link color and remove underscroe */
+a {
+    color: #666;
+    text-decoration: none
+}
+
+    /* mouse passed color  */
+a:hover {
+    color: #c81623
+}
+
+
+input {
+    /* word type  */
+    font-family: Microsoft YaHei, Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif;
+    /* remove gray border  */
+    border: 0; 
+    outline: none;
+}
+
+body {
+    /* CSS3 make color more clear  */
+    -webkit-font-smoothing: antialiased;
+    background-color: #fff;
+    font: 12px/1.5 Microsoft YaHei, Heiti SC, tahoma, arial, Hiragino Sans GB, "\5B8B\4F53", sans-serif;
+    color: #666
+}
+
+.hide,
+.none {
+    display: none
+}
+/* clean float */
+.clearfix:after {
+    visibility: hidden;
+    clear: both;
+    display: block;
+    content: ".";
+    height: 0
+}
+
+.clearfix {
+    *zoom: 1
+}

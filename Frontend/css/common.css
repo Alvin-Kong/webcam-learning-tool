@@ -1,0 +1,140 @@
+
+body {
+    background-color: rgb(255, 255, 255);
+}
+/* shortcut part*/
+.w{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.shortcut{
+    width: 100%;
+    height: 31px;
+    font-size: 12px;
+    line-height: 31px;
+    font-weight: 700;
+    background-color: #f1f1f1;
+    margin-top: 0
+}
+
+
+.shortcut .left{
+    float: left;
+    
+}
+
+.shortcut .right{
+    float: right;
+}
+
+.shortcut ul li{
+    display: inline;
+}
+
+
+
+header {
+    font-size: 36px;
+    text-align: center;
+    color: black;
+    font-weight: 700;
+    margin-top: 50px;
+}
+
+nav {
+    font-size: 24px;
+    text-align: center;
+    color: black;
+    font-weight: 700;
+    margin-top: 0px;
+}
+
+ul li{
+    margin-top: 2px;
+}
+
+.section1 {
+
+    text-align: center;
+    margin-top: 10px;
+}
+
+.section2 {
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+.homepage-buttons{
+    margin-bottom: 100px;
+}
+
+.section1 button{
+    background-color: #9900ff;
+    border: 1px #9900ff;
+    color: white; 
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px 24px;
+}
+
+.section1 button:hover{
+    background-color: #cc80ff;
+}
+
+.section2 button{
+    background-color: #9900ff;
+    border: 1px #9900ff;
+    color: white; 
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px 24px;
+}
+
+.section2 button:hover{
+    background-color: #cc80ff;
+}
+
+
+#buttons li {
+    list-style: none;
+    text-align: center;
+    border-radius: 20px;    
+    background-color: #9900ff;
+    color: white; 
+    font-size: 18px;
+    margin-left:auto;
+    margin-right:auto;
+    width: 150px;
+    line-height: 60px;
+    text-decoration: none;
+  }
+
+  #buttons li a {
+    text-decoration: none;
+    color: #FFFFFF;
+    display: block;
+    border-radius: 20px;   
+  }
+  
+  #buttons li a:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #cc80ff;
+    border-radius: 20px;   
+  }
+
+  nav ul li {
+    float: center;
+    margin-right: 0.5em;
+  }
+
+  nav ul li a {
+    padding: 0.25em 1em;
+    text-decoration: none; /* no underline */
+    color: #9900ff; /* dark blue */    
+  }
+ /*  */
