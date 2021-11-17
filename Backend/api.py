@@ -6,9 +6,8 @@ import cv2
 import asyncio
 import json
 import sys
+import requests
 import threading
-
-import util
 
 app = flask.Flask(__name__)
 cors = CORS(app)
@@ -16,10 +15,34 @@ cors = CORS(app)
 objectTracker = object()
 
 # Main function to respond to requests
-@app.route("/", methods=["GET"])
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    response = asyncio.run(build_response())
-    return json.dumps(response), {"Content-Type": "application/json"}
+    if request.method == 'GET':
+        response = asyncio.run(build_response())
+        return json.dumps(response), {"Content-Type": "application/json"}
+    elif request.method == 'POST':
+        query = request.args
+        imageFile = None
+        if "imageFile" in query:
+            imageFile = query["imageFile"]
+
+        # return an error if the query doesn't contain the required parameters
+        if is_any_none(imageFile):
+            return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
+                "Content-Type": "application/json"}
+
+        return imageFile
+    else:
+        return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
+            "Content-Type": "application/json"}
+
+
+# Test if any argument is equal to None
+def is_any_none(*argv):
+    for arg in argv:
+        if arg == None:
+            return True
+    return False
 
 
 # Build a response to send to the client
@@ -98,16 +121,6 @@ class ObjectTracker():
         return yCenter
 
 
-    # Function to build a json response containing the coordinates of the boundary box
-    async def get_position(self):
-        response = {}
-        # response["center"] = self.getCenter()
-        response["x"] = self.getXCenter()
-        response["y"] = self.getYCenter()
-        print(response)
-        return json.dumps(response)
-
-
     # Main method to run object tracker
     def runTracker(self):
         # Loop to maintain video capture device input and display
@@ -128,6 +141,13 @@ class ObjectTracker():
                 cv2.putText(self._frame, "Tracking", (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
             else:
                 cv2.putText(self._frame, "Lost", (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+                self._draw = False
+
+                # Recalibrate tracker when object is lost
+                if cv2.waitKey(1) & 0xFF == ord('r'):
+                    bbox = cv2.selectROI(frame, False)
+                    tracker.init(frame, bbox)
+                    
 
             # Calculate and display frames per second (FPS)
             fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
@@ -209,10 +229,6 @@ def initializeTracker():
     tracker.init(frame, bbox)
 
     return capture, ret, frame, bbox, tracker, draw
-
-
-def getTracker():
-    return objectTracker
 
 
 # Function to run the API
