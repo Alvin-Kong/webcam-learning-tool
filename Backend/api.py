@@ -14,6 +14,7 @@ cors = CORS(app)
 
 objectTracker = object()
 
+
 # Main function to respond to requests
 @app.route("/", methods=['GET', 'POST'])
 def home():
