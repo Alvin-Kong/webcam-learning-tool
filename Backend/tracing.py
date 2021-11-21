@@ -6,7 +6,7 @@ import os
 
 def removeOutline(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    threshold_level = 30
+    threshold_level = 50
     mask = gray < threshold_level
     image[np.where(mask)] = 255
 
@@ -59,11 +59,9 @@ def siftImage(originalImage, testImage):
 """
 
 if __name__ == '__main__':
-    original = cv2.imread("tracing/1.png")  # tests/index.png")
-    traced = cv2.imread("tracing/1.png")  # tests/indexTraced2
+    original = cv2.imread("tracing/tests/index.png")  # tests/index.png")
+    traced = cv2.imread("tracing/tests/index copy.png")  # tests/indexTraced2
     original_traced = copy(traced)
-
-    #reformatImage()
 
     black = [0, 0, 0]
     white = [255, 255, 255]
@@ -72,15 +70,14 @@ if __name__ == '__main__':
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
-    diff2 = cv2.subtract(original_traced, original)
-    original_count = np.count_nonzero(np.all(original != white, 2))
+
+    original_count = np.count_nonzero(np.all(original == 0, 2))
     print(original_count)
-    traced_count = np.count_nonzero(np.all(traced != white, 2))
+    traced_count = np.count_nonzero(np.all(traced != 255, 2))
     print(traced_count)
-    diff_count = np.count_nonzero(np.all(diff != black, 2))
+    diff_count = np.count_nonzero(np.all(diff != 0, 2))
     print(diff_count)
 
-    cv2.imshow("diff2", diff2)
 
     #    error_diff = cv2.subtract(error, traced)
     #    error_count = np.count_nonzero(np.all(error_diff != black, 2))
