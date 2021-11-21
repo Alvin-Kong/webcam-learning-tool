@@ -59,8 +59,8 @@ def siftImage(originalImage, testImage):
 """
 
 if __name__ == '__main__':
-    original = cv2.imread("tracing/0.png")  # tests/index.png")
-    traced = cv2.imread("tracing/0.png")  # tests/indexTraced2
+    original = cv2.imread("tracing/1.png")  # tests/index.png")
+    traced = cv2.imread("tracing/1.png")  # tests/indexTraced2
     original_traced = copy(traced)
 
     #reformatImage()
