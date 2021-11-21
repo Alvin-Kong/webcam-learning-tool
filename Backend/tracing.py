@@ -5,7 +5,7 @@ import numpy as np
 
 def removeOutline(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    threshold_level = 30
+    threshold_level = 80
     mask = gray < threshold_level
     image[mask] = (255, 255, 255)
 
@@ -13,6 +13,7 @@ def removeOutline(image):
 def validateImages(originalImage, tracedImage):
     if originalImage.shape == tracedImage.shape:
         print("same size")
+
 
 
 """
@@ -49,11 +50,11 @@ def siftImage(originalImage, testImage):
 """
 
 if __name__ == '__main__':
-    original = cv2.imread("tracing/index.png")
-    traced = cv2.imread("tracing/indexTraced5.png")
+    original = cv2.imread("tracing/tests/index.png") #tests/index
+    traced = cv2.imread("tracing/tests/indexTraced5.png") #tests/indexTraced2
     original_traced = copy(traced)
-    error = cv2.imread("tracing/range.png")
 
+    cv2.imshow('TRACED', traced)
     black = [0, 0, 0]
     white = [255, 255, 255]
 
@@ -61,10 +62,16 @@ if __name__ == '__main__':
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
-
+    diff2 = cv2.subtract(original_traced, original)
     original_count = np.count_nonzero(np.all(original != white, 2))
+    print(original_count)
     traced_count = np.count_nonzero(np.all(traced != white, 2))
+    print(traced_count)
     diff_count = np.count_nonzero(np.all(diff != black, 2))
+    print(diff_count)
+
+    cv2.imshow("diff2",diff2)
+
 
 
 #    error_diff = cv2.subtract(error, traced)
