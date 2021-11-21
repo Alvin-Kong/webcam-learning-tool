@@ -1,3 +1,4 @@
+import syslog
 from copy import copy
 import cv2
 import numpy as np
@@ -23,6 +24,13 @@ def reformatImage():
 def validateImages(originalImage, tracedImage):
     if originalImage.shape == tracedImage.shape:
         print("same size")
+
+def trace(original, traced):
+    try:
+        originalImage = cv2.imread("tracing/" + original + ".png")
+        tracedImage = cv2.imread("tracing/traced" + traced + ".png")
+    except Exception:
+        syslog.LOG_ERR
 
 
 """
