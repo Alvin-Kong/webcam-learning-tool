@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    
+    <div class="menu">
+      <div class="btn" id="brush" style="background-image: url(img/brush.png);"></div>
+      <div class="btn" id="rect">rectangle</div>
+      <div class="btn" id="circ">circle</div>
+      <div class="btn1 line thin active"></div>
+      <div class="btn1 line normal"></div>
+      <div class="btn1 line thick"></div>
+      <div class="btn"><input type="color" name="color" id="color"></div>
+    </div>
+    
+      <canvas id ="canvas" width="800px" height="600px" ></canvas>
+  
+    
+    <div class="tool">
+          <button class="save"  id="save" title="save">save</button>
+          <!-- <button class="brush active" id="brush" title="brush">brush</button> -->
+          <button class="eraser" id="eraser" title="eraser">eraser</button>
+          <button class="clear" id="clear" title="clear">clear</button>  
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
