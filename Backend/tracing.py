@@ -71,7 +71,7 @@ if __name__ == '__main__':
     print(diff_count)
 
     cv2.imshow("diff2",diff2)
-
+    
 
 
 #    error_diff = cv2.subtract(error, traced)
