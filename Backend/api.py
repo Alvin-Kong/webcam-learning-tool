@@ -61,7 +61,7 @@ async def get_position():
     response["x"] = objectTracker.getXCenter()
     response["y"] = objectTracker.getYCenter()
     print(response)
-    return json.dumps(response)
+    return response
 
 
 # Generate an JSON error response
@@ -128,6 +128,7 @@ class ObjectTracker():
         while(self._capture.isOpened()):
             timer = cv2.getTickCount() 
             self._ret, self._frame = self._capture.read()
+            self._frame = cv2.flip(self._frame, 1)
             
             # ret will return 'True' if video caputre is good and 'False' if video capture is bad
             if not self._ret:
@@ -226,6 +227,7 @@ def initializeTracker():
 
     # Read the first frame and initialize the boundary box for the tracker
     ret, frame = capture.read()
+    frame = cv2.flip(frame, 1)
     bbox = cv2.selectROI(frame, False)
     tracker.init(frame, bbox)
 
