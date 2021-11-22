@@ -1,20 +1,54 @@
+import syslog
 from copy import copy
 import cv2
 import numpy as np
+import os
 
 
 def removeOutline(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    threshold_level = 80
+    threshold_level = 50
     mask = gray < threshold_level
-    image[mask] = (255, 255, 255)
+    image[np.where(mask)] = 255
+
+
+def reformatImage():
+    for file in os.listdir("tracing"):
+        if(file.endswith(".png")):
+            image = cv2.imread("tracing/" + file)
+            image[np.where(image != 255)] = 0
+            cv2.imshow(file, image)
+            cv2.imwrite(file, image)
 
 
 def validateImages(originalImage, tracedImage):
-    if originalImage.shape == tracedImage.shape:
-        print("same size")
+    if originalImage.shape != tracedImage.shape:
+        print("ERROR")
 
+def trace(originalImage, tracedImage):
+    try:
+        original = cv2.imread("tracing/Original/" + originalImage + ".png")
+        traced = cv2.imread("tracing/Tests/" + tracedImage + ".png")
+    except Exception:
+        print("ERROR")
 
+    removeOutline(traced)
+    validateImages(original, traced)
+    diff = cv2.subtract(original, traced)
+
+    original_count = np.count_nonzero(np.all(original == 0, 2))
+    traced_count = np.count_nonzero(np.all(traced != 255, 2))
+    diff_count = np.count_nonzero(np.all(diff != 0, 2))
+
+    error_val = 10
+
+    if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
+        print("INVALID")
+    else:
+        if ((1 - (diff_count / original_count)) * 100 + error_val) >= 100:
+            return 100
+        else:
+            return (1 - (diff_count / original_count)) * 100 + error_val
 
 """
 def siftImage(originalImage, testImage):
@@ -49,12 +83,16 @@ def siftImage(originalImage, testImage):
     cv2.imshow("better", better)
 """
 
+
 if __name__ == '__main__':
-    original = cv2.imread("tracing/tests/index.png") #tests/index
-    traced = cv2.imread("tracing/tests/indexTraced5.png") #tests/indexTraced2
+    print(trace("index", "indexTraced"))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """ 
+    original = cv2.imread("tracing/tests/index.png")  # tests/index.png")
+    traced = cv2.imread("tracing/tests/index copy.png")  # tests/indexTraced2
     original_traced = copy(traced)
 
-    cv2.imshow('TRACED', traced)
     black = [0, 0, 0]
     white = [255, 255, 255]
 
@@ -62,22 +100,19 @@ if __name__ == '__main__':
     validateImages(original, traced)
 
     diff = cv2.subtract(original, traced)
-    diff2 = cv2.subtract(original_traced, original)
-    original_count = np.count_nonzero(np.all(original != white, 2))
+
+    original_count = np.count_nonzero(np.all(original == 0, 2))
     print(original_count)
-    traced_count = np.count_nonzero(np.all(traced != white, 2))
+    traced_count = np.count_nonzero(np.all(traced != 255, 2))
     print(traced_count)
-    diff_count = np.count_nonzero(np.all(diff != black, 2))
+    diff_count = np.count_nonzero(np.all(diff != 0, 2))
     print(diff_count)
 
-    cv2.imshow("diff2",diff2)
-    
+
+        error_diff = cv2.subtract(error, traced)
+       error_count = np.count_nonzero(np.all(error_diff != black, 2))
 
 
-#    error_diff = cv2.subtract(error, traced)
-#    error_count = np.count_nonzero(np.all(error_diff != black, 2))
-
-    """
     added_image = cv2.addWeighted(error, 0.2, traced, 0.5, 0)
     cv2.imshow("combined", added_image)
 
@@ -99,19 +134,19 @@ if __name__ == '__main__':
     print(traced_count)
 
     diff_count = np.count_nonzero(np.all(diff != black, 2))
-    """
+
 
     error_val = 10
     if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
         print("INVALID")
     else:
-        """
+        
         error_percent = ((traced_count - error_count) / original_count) * 100
         print("ERROR PERCENT: " + str(error_percent))
         print((error_count / original_count + traced_count / original_count) * 100)
         print("CORRECT CALCULATION: " + str(((traced_count - error_count) / (original_count-error_count)) * 100))
         print(((traced_count - error_count) / traced_count) + (traced_count - error_count) / original_count * 100)
-        """
+        
         if ((1 - (diff_count / original_count)) * 100 + error_val) >= 100:
             print(100)
         else:
@@ -126,3 +161,4 @@ if __name__ == '__main__':
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+"""
