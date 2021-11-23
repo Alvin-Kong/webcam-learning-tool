@@ -1,3 +1,5 @@
+import pathlib
+
 import cv2
 import numpy as np
 import os
@@ -39,8 +41,9 @@ def qualityBracket(percentage):
 # Function that is called from the API that will compare two png files within the directory
 def trace(originalImage, tracedImage):
     try:
-        original = cv2.imread("tracing/Original/" + originalImage + ".png")
-        traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
+        path = pathlib.Path().resolve()
+        original = cv2.imread(str(path) + "/tracing/Original/" + originalImage + ".png")
+        traced = cv2.imread(str(path) + "/tracing/Traced/" + tracedImage + ".png")
         validateImages(original, traced)
         cv2.imshow("Original Trace", traced)
         removeOutline(traced)
