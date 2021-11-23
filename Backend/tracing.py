@@ -44,6 +44,11 @@ def trace(originalImage, tracedImage):
         path = pathlib.Path().resolve()
         original = cv2.imread(str(path) + "/tracing/Original/" + originalImage + ".png")
         traced = cv2.imread(str(path) + "/tracing/Traced/" + tracedImage + ".png")
+
+        # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
+        # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
+        #original = cv2.imread("tracing/Original/" + originalImage + ".png")
+        #traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
         validateImages(original, traced)
         cv2.imshow("Original Trace", traced)
         removeOutline(traced)
@@ -71,6 +76,8 @@ def trace(originalImage, tracedImage):
 
 
 if __name__ == '__main__':
+    #zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
+    #cv2.imshow("0", zero)
     print(trace("index", "indexTraced3"))
     cv2.waitKey(0)
     cv2.destroyAllWindows()
