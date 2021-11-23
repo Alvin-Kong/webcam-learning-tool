@@ -9,6 +9,8 @@ import sys
 import requests
 import threading
 
+import tracing
+
 app = flask.Flask(__name__)
 cors = CORS(app)
 
@@ -60,7 +62,16 @@ async def get_position():
     response["center"] = objectTracker.getCenter()
     response["x"] = objectTracker.getXCenter()
     response["y"] = objectTracker.getYCenter()
-    print(response)
+    # print(response)
+    return response
+
+
+# Function to build json response with return values from tracing function
+async def get_tracingStats():
+    response = {}
+    # parameter should be file name?
+    response["statistic"] = tracing.trace("0", "0 copy 2")
+    # print(response)
     return response
 
 
@@ -145,12 +156,6 @@ class ObjectTracker():
                 cv2.putText(self._frame, "Lost", (0, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
                 self._draw = False
 
-                # Recalibrate tracker when object is lost
-                if cv2.waitKey(1) & 0xFF == ord('r'):
-                    bbox = cv2.selectROI(frame, False)
-                    tracker.init(frame, bbox)
-                    
-
             # Calculate and display frames per second (FPS)
             fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
             cv2.putText(self._frame, "FPS : " + str(int(fps)), (0, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
@@ -180,6 +185,14 @@ class ObjectTracker():
                     self._draw = False
                 else:
                     self._draw = True
+
+            # Recalibrate tracker when object is lost
+            if cv2.waitKey(1) & 0xFF == ord('r'):
+                self._capture.release()
+                cv2.destroyAllWindows()
+                capture, ret, frame, bbox, tracker, draw = initializeTracker()
+                newTracker = ObjectTracker(capture, ret, frame, bbox, tracker, draw)
+                newTracker.runTracker
 
             # Press 'esc' key to exit
             if cv2.waitKey(1) & 0xFF == 27:
