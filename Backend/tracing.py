@@ -79,7 +79,7 @@ def trace(originalImage, tracedImage):
         print("Unable to open file")
         print(e)
 
-
+# Method to return a random png from different categories
 def getOriginal(choice):
     if choice == 0:
         return getAny()
@@ -96,12 +96,12 @@ def getOriginal(choice):
     else:
         return getAny()
 
-
+# Returns any of the png files
 def getAny():
     files = os.listdir("tracing/Original")
     return files[randrange(len(files))]
 
-
+# Returns a png that is a letter
 def getLetter():
     letters = []
     for file in os.listdir("tracing/Original"):
@@ -111,7 +111,7 @@ def getLetter():
     print(letters[index])
     return letters[index]
 
-
+# Returns png that is a digit
 def getNumber():
     numbers = []
     for file in os.listdir("tracing/Original"):
@@ -121,7 +121,7 @@ def getNumber():
     print(numbers[index])
     return numbers[index]
 
-
+# Returns png that is an upper case letter
 def getUpperCase():
     letters = []
     for file in os.listdir("tracing/Original"):
@@ -131,7 +131,7 @@ def getUpperCase():
     print(letters[index])
     return letters[index]
 
-
+# Returns png that is a lower case letter
 def getLowerCase():
     letters = []
     for file in os.listdir("tracing/Original"):
@@ -141,7 +141,7 @@ def getLowerCase():
     print(letters[index])
     return letters[index]
 
-
+# Returns png that is a shape
 def getShape():
     shapes = []
     for file in os.listdir("tracing/Original"):
