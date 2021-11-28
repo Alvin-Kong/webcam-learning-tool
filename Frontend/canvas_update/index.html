@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="menu">
+      <div
+        class="btn"
+        id="brush"
+        style="background-image: url(img/brush.png)"
+      ></div>
+
+      <div
+        class="btn"
+        id="rect"
+        style="background-image: url(img/rectangle.png)"
+      ></div>
+      <div
+        class="btn"
+        id="arc"
+        style="background-image: url(img/arc.png)"
+      ></div>
+      <div class="btn line thin active"></div>
+      <div class="btn line normal"></div>
+      <div class="btn line thick"></div>
+      <div class="btn"><input type="color" name="color" id="color" /></div>
+      <div
+        class="btn download"
+        style="background-image: url(img/download.png)"
+      ></div>
+      <div
+        onclick="clear_canvas()"
+        class="btn clear"
+        style="background-image: url(img/clear.png)"
+        id="clear"
+      ></div>
+      <div
+        onclick="undo_last()"
+        class="btn undo"
+        style="background-image: url(img/undo.png)"
+        id="undo"
+      ></div>
+    </div>
+
+    <canvas id="canvas" width="800px" height="600px"></canvas>
+
+    <script src="main.js"></script>
+  </body>
+</html>
