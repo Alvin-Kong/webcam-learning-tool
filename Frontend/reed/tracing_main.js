@@ -6,23 +6,41 @@ let undo = document.getElementById("#undo");
 let allBtn = document.querySelectorAll(".btn");
 let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
+let backgroundBtn = document.querySelector("#background");
 
-change_background(1,"/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png");
 
-
-function change_background(choice, string){
-    if (choice == 1)
+function change_background(choice){
+    switch(choice)
     {
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
+        case "0":
+            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
+            url = "url("+ string + ")"
+            canvas.style.backgroundImage = url
+        case "1":
+        {
+            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
+            url = "url("+ string + ")"
+            canvas.style.backgroundImage = url
+        }
+        case "2":
+        {
+            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
+            url = "url("+ string + ")"
+            canvas.style.backgroundImage = url
+        }
+        case "3":
+        {
+            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
+            url = "url("+ string + ")"
+            canvas.style.backgroundImage = url
+        }
+        default:
+        {
+            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
+            url = "url("+ string + ")"
+            canvas.style.backgroundImage = url
+        }
     }
-    else
-    {
-        canvas.style.backgroundImage = "url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/9.png')"
-
-    }
-
-
 }
 
 // record  x and y coordinates point of brush
