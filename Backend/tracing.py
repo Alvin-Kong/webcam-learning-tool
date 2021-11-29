@@ -44,9 +44,15 @@ def qualityBracket(percentage):
 # Arguments are two string values for the image name
 def trace(originalImage, tracedImage):
     try:
-        path = pathlib.Path().resolve()
-        original = cv2.imread(str(path) + "/tracing/Original/" + originalImage + ".png")
-        traced = cv2.imread(str(path) + "/tracing/Traced/" + tracedImage + ".png")
+        path = generatePath()
+        pathOriginal = os.path.join(path, "Original")
+        pathOriginal = os.path.join(pathOriginal, originalImage)
+
+        original = cv2.imread(pathOriginal + ".png")
+
+        pathTrace = os.path.join(path, "Traced")
+        pathTrace = os.path.join(pathTrace, tracedImage)
+        traced = cv2.imread(path + "/Traced/" + tracedImage + ".png")
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
@@ -82,29 +88,28 @@ def trace(originalImage, tracedImage):
 
 # Method to return a random png from different categories
 def getOriginal(choice):
-    path = str(pathlib.Path().resolve()) + "/Tracing/Original/"
-    print(path)
+    path = os.path.join(generatePath(), "Original")
     if choice == 0:
         file = getAny(path)
-        return path + file
+        return os.path.join(path, file)
     elif choice == 1:
         file = getLetter(path)
-        return path + file
+        return os.path.join(path, file)
     elif choice == 2:
         file = getNumber(path)
-        return path + file
+        return os.path.join(path, file)
     elif choice == 3:
         file = getUpperCase(path)
-        return path + file
+        return os.path.join(path, file)
     elif choice == 4:
         file = getLowerCase(path)
-        return path + file
+        return os.path.join(path, file)
     elif choice == 5:
         file = getShape(path)
-        return path + file
+        return os.path.join(path, file)
     else:
         file = getAny(path)
-        return path + file
+        return os.path.join(path, file)
 
 # Returns any of the png files
 def getAny(path):
@@ -161,14 +166,25 @@ def getShape(path):
     print(shapes[index])
     return shapes[index]
 
+def generatePath():
+    path = pathlib.Path().resolve()
+    if not str(path).__contains__("webcam-learning-tool"):
+        path = os.path.join(path, "webcam-learning-tool")
+    if not str(path).__contains__("Backend"):
+        path = os.path.join(path, "Backend")
+    if not str(path).__contains__("Tracing"):
+        path = os.path.join(path, "Tracing")
+    return path
+
 
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    #print(trace("index", "indexTraced3"))
-    path = getOriginal(1)
-    print(path)
-    imageTest = cv2.imread(path)
-    cv2.imshow("test", imageTest)
+    print(trace("index", "indexTraced3"))
+    #path = getOriginal(1)
+    #print(path)
+    #imageTest = cv2.imread(path)
+    #cv2.imshow("test", imageTest)
+    generatePath()
     cv2.waitKey(0)
     cv2.destroyAllWindows()

@@ -8,6 +8,15 @@ let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 
 
+canvas.style.backgroundImage = "url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png')"
+
+function change_background(){
+    base_image = new Image();
+    base_image.src = '/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png';
+    base_image.onload = function(){
+        context.drawImage(background,0,0);
+    }
+  }
 
 // record  x and y coordinates point of brush
 var x = 0;
@@ -54,6 +63,7 @@ brushBtn.onclick = function () {
   })
   brushBtn.classList.add("active");
   board.type = "brush"
+  change_background();
 };
 
 
@@ -201,17 +211,6 @@ document.addEventListener('keypress', async (e) => {
 // HTML
 // style = "background-image: url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png');"
 
-function change_background(){
-    base_image = new Image();
-    base_image.src = '/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png';
-    base_image.onload = function(){
-        context.drawImage(background,0,0);
-    }
-    //context.drawImage(base_image, 0, 0);
-    //canvas.style.backgroundImage = base_image
-    //context.stroke();
-   // context.closePath();
-  }
 
 // Function to create drawing lines
 function drawLine(x_start, y_start, x_end, y_end) {
