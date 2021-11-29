@@ -67,10 +67,10 @@
 
 
         async function sendInfo() {
-            let postImgPath = 'index'
-            let postTempPath = 'indexTraced3'
+            let postImgPath = 'indexTraced3'
+            let postTempPath = 'index'
             let postTempType = 0
-            var data = await sendData('index', 'indexTraced3', 0)
+            var data = await sendData(postImgPath, postTempPath, 0)
             return data
         }
 
@@ -81,15 +81,18 @@
         }
 
 
-        async function main() {
-            // var result = await sendInfo()
-            // console.log(result)
+        async function postMain() {
+            var result = await sendInfo()
+            console.log(result)
+        }
 
+        async function getMain() {
             var result = await getInfo()
             console.log(result)
         }
 
-        main()
+        postMain()
+        getMain()
     </script>
 </body>
 </html>

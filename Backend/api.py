@@ -20,8 +20,8 @@ getTraceData = None
 getTemplatePath = None
 isOff = False
 filepathInput = {}
-filepathInput["postTemplatePath"] = 'index'
-filepathInput["postImagePath"] = 'indexTraced3'
+# filepathInput["postTemplatePath"] = 'index'
+# filepathInput["postImagePath"] = 'indexTraced3'
 templateType = None
 completed = "Data POSTed"
 
@@ -95,12 +95,16 @@ def home():
 
         if postImagePath is not None:
             filepathInput["postImagePath"] = postImagePath
+            print("postImagePath: ", filepathInput["postImagePath"])
+
 
         if postTemplatePath is not None:
             filepathInput["postTemplatePath"] = postTemplatePath
+            print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
         if postTemplateType is not None:
             templateType = postTemplateType
+            print("postTemplateType: ", templateType)
 
         return json.dumps(completed), {"Content-Type": "application/json"}
 
@@ -142,9 +146,9 @@ async def build_tracking_response():
 # Function to build a json response containing the returned data from tracing.py's trace method
 async def get_tracing_stats():
     response = {}
-    print(filepathInput["postTemplatePath"])
-    print(filepathInput["postImagePath"])
-    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postImagePath"], filepathInput["postTemplatePath"])
+    print("postTemplatePath: ", filepathInput["postTemplatePath"])
+    print("postImagePath: ", filepathInput["postImagePath"])
+    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"])
     return response
 
 

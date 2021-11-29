@@ -183,7 +183,8 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    print(trace("0", "canvas-image"))
+    # print(trace("0", "canvas-image"))
+    print(trace('index', 'indexTraced3'))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)
