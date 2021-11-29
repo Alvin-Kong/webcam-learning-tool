@@ -10,17 +10,89 @@
     <script>
         // get data from local API
         const api_url = 'http://127.0.0.1:5000/';
-        async function getData() {
-            let response = await axios.get(api_url)
+        async function sendData(postImgPath, postTempPath, postTempType) {
+            let response = await axios.post(api_url, {
+                postImagePath: postImgPath,
+                postTemplatePath: postTempPath,
+                postTemplateType: postTempType
+            })
+            // .then(function(response) {
+            //     console.log(response)
+            // })
             .catch(function(error) {
                 console.log(error);
                 alert(error);
             });
+            // console.log(response)
+            // return response;
+        }
+
+        async function sendData2(postImgPath, postTempPath, postTempType) {
+            let response = await axios({
+                method: 'POST',
+                url: api_url,
+                data: {
+                    postImagePath: postImgPath,
+                    postTemplatePath: postTempPath,
+                    postTemplateType: postTempType
+                }
+            })
+            .catch(function(error) {
+                console.log(error);
+                alert(error)
+            });
             console.log(response)
+            return response
+        }
+
+        
+        async function getData() {
+            let response = await axios.get(api_url, {
+                params: {
+                    getTraceData: true,
+                    getTemplatePath: true,
+                    isOff: false,
+                }
+            })
+            // .then(function(response){
+            //     console.log(response)
+            // })
+            .catch(function(error) {
+                console.log(error);
+                alert(error);
+            });
+            // console.log(response)
             return response;
         }
 
-        getData()
+
+        async function sendInfo() {
+            let postImgPath = 'indexTraced3'
+            let postTempPath = 'index'
+            let postTempType = 0
+            var data = await sendData(postImgPath, postTempPath, 0)
+            return data
+        }
+
+
+        async function getInfo() {
+            var data = await getData()
+            return data
+        }
+
+
+        async function postMain() {
+            var result = await sendInfo()
+            console.log(result)
+        }
+
+        async function getMain() {
+            var result = await getInfo()
+            console.log(result)
+        }
+
+        postMain()
+        getMain()
     </script>
 </body>
 </html>
