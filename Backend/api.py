@@ -16,25 +16,67 @@ cors = CORS(app)
 
 objectTracker = object()
 
+getTraceData = None
+getTemplatePath = None
+isOff = False
+filepathInput = {}
+templateType = None
+
 
 # Main function to respond to requests
 @app.route("/", methods=['GET', 'POST'])
 def home():
     if request.method == 'GET':
-        response = asyncio.run(build_response())
-        return json.dumps(response), {"Content-Type": "application/json"}
-    elif request.method == 'POST':
         query = request.args
-        imageFile = None
-        if "imageFile" in query:
-            imageFile = query["imageFile"]
+        getTraceData = getTemplatePath = isOff = None
+        if "getTraceData" in query:
+            getTraceData = query["getTraceData"]
+        if "getTemplatePath" in query:
+            getTemplatePath = query["getTemplatePath"]
+        if "isOff" in query:
+            isOff = query["isOff"]
 
-        # return an error if the query doesn't contain the required parameters
-        if is_any_none(imageFile):
+        # return an error if the "get" query doesn't contain the required parameters
+        if is_any_none(getTraceData, getTemplatePath, isOff):
             return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
                 "Content-Type": "application/json"}
 
-        return imageFile
+        if getTraceData is True:
+            if filepathInput is None:
+                return json.dumps(generateError("original template and/or saved canvas could not be found")), 400, {
+                "Content-Type": "application/json"}
+            else:
+                response = build_tracing_response()
+
+        if getTemplatePath is True:
+            response = build_template_response()
+
+        if isOff is False or None:
+            response = build_tracking_response()
+            return json.dumps(response), {"Content-Type": "application/json"}
+
+    elif request.method == 'POST':
+        query = request.args
+        postImagePath = postTemplatePath = postTemplateType = None
+        if "postImagePath" in query:
+            postImagePath = query["postImagePath"]
+        if "postTemplatePath" in query:
+            postTemplatePath = query["postTemplatePath"]
+        if "postTemplateType" in query:
+            postTemplateType = query["postTemplateType"]
+
+        # return an error if the "post" query doesn't contain the required parameters
+        if is_any_none(postImagePath, postTemplatePath, postTemplateType):
+            return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
+                "Content-Type": "application/json"}
+
+        if postImagePath is not None:
+            filepathInput["postImagePath"] = postImagePath
+        if postTemplatePath is not None:
+            filepathInput["postTemplatePath"] = postTemplatePath
+        if postTemplateType is not None:
+            templateType = postTemplateType
+
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
             "Content-Type": "application/json"}
@@ -48,16 +90,43 @@ def is_any_none(*argv):
     return False
 
 
-# Build a response to send to the client
-# asynchronously waiting for external APIs
-async def build_response():
+# Build a tracing response to send to the client
+def build_tracing_response():
     response = {}
-    response["results"] = await get_position()
+    response["tracing_results"] = get_tracing_stats()
+    return response
+
+
+# Build a response to send the template file that will be used for tracing mode
+def build_template_response():
+    response = {}
+    response["template_results"] = get_template()
+    return response
+
+
+# Build a tracking response to send to the client
+def build_tracking_response():
+    response = {}
+    response["tracking_results"] = get_position()
+    return response
+
+
+# Function to build a json response containing the returned data from tracing.py's trace method
+def get_tracing_stats():
+    response = {}
+    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"])
+    return response
+
+
+# Function to build a json response containing the file path to the template file to be used during tracing mode
+def get_template():
+    response = {}
+    response["template"] = tracing.getOriginal(templateType)
     return response
 
 
 # Function to build a json response containing the coordinates of the boundary box
-async def get_position():
+def get_position():
     response = {}
     response["center"] = objectTracker.getCenter()
     response["x"] = objectTracker.getXCenter()

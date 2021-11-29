@@ -15,6 +15,7 @@ var y = 0;
 //define array to store record of drawing
 let restore_array = [];
 let index = -1;
+let limiter = 0;
 
 //drawing board function
 var board = {
@@ -195,9 +196,9 @@ canvas.addEventListener("mouseup", function (e) {
   }
 
   if(e.type == 'mouseup'){
-  restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
-  index+=1;
-  console.log(restore_array);
+    restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    index+=1;
+    console.log(restore_array);
   } 
 });
 
@@ -257,18 +258,19 @@ document.addEventListener('keypress', async (e) => {
     console.log("Drawing Start")
     var startapiData = await getapiData();
     // console.log(startapiData);
-    var startCenter = startapiData.data.results["center"];
-    var startX = startapiData.data.results["x"];
-    var startY = startapiData.data.results["y"];
+    var startCenter = startapiData.data.tracking_results["center"];
+    var startX = startapiData.data.tracking_results["x"];
+    var startY = startapiData.data.tracking_results["y"];
     // console.log("start: " + startX + ", " + startY);
+    limiter = 0;
 
     // Main while loop to draw
     while (board.canDraw) {
       var nextapiData = await getapiData();
       // console.log(nextapiData);
-      var nextCenter = nextapiData.data.results["center"];
-      var nextX = nextapiData.data.results["x"];
-      var nextY = nextapiData.data.results["y"];
+      var nextCenter = nextapiData.data.tracking_results["center"];
+      var nextX = nextapiData.data.tracking_results["x"];
+      var nextY = nextapiData.data.tracking_results["y"];
       // console.log("next: " + nextX + ", " + nextY);
       
       drawLine(startX, startY, nextX, nextY)
@@ -278,7 +280,15 @@ document.addEventListener('keypress', async (e) => {
         if (event.code === 'Space') {
           board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
           board.canDraw = false;
-          console.log("Drawing Stop")
+
+          restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+          limiter += 1;
+          if (limiter == 1) {
+            index += 1;
+            console.log("index" + index)
+            // console.log(restore_array);
+            console.log("Drawing Stop")
+          }
         }
       });
       
