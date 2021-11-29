@@ -8,38 +8,51 @@ let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 let backgroundBtn = document.querySelector("#background");
 
+background = ""
 
 function change_background(choice){
-    switch(choice)
+    clear_canvas()
+    if (choice == 0)
     {
-        case "0":
-            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
-            url = "url("+ string + ")"
-            canvas.style.backgroundImage = url
-        case "1":
-        {
-            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
-            url = "url("+ string + ")"
-            canvas.style.backgroundImage = url
-        }
-        case "2":
-        {
-            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
-            url = "url("+ string + ")"
-            canvas.style.backgroundImage = url
-        }
-        case "3":
-        {
-            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
-            url = "url("+ string + ")"
-            canvas.style.backgroundImage = url
-        }
-        default:
-        {
-            string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
-            url = "url("+ string + ")"
-            canvas.style.backgroundImage = url
-        }
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else if (choice == 1)
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else if (choice == 2)
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else if (choice == 3)
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else if (choice == 4)
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/4.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else if (choice == 5)
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/5.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
+    }
+    else
+    {
+        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
     }
 }
 
@@ -98,6 +111,7 @@ downloadBtn.onclick = function(){
   const a = document.createElement("a");
   document.body.appendChild(a);
   a.href = canvas.toDataURL();
+  window.open
   a.download = "canvas-image.png";
   a.click();
   document.body.removeChild(a);
