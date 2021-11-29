@@ -50,7 +50,7 @@ def trace(originalImage, tracedImage):
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
-        #  original = cv2.imread("tracing/Original/" + originalImage + ".png")
+        # original = cv2.imread("tracing/Original/" + originalImage + ".png")
         # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
         cv2.imshow("Original", original)
         validateImages(original, traced)
@@ -65,6 +65,7 @@ def trace(originalImage, tracedImage):
         error_val = 10
 
         cv2.imshow("trace", traced)
+        cv2.imshow("difference", diff)
         cv2.imshow("original", original)
 
         percentage = (1 - (diff_count / original_count)) * 100
@@ -81,30 +82,39 @@ def trace(originalImage, tracedImage):
 
 # Method to return a random png from different categories
 def getOriginal(choice):
+    path = str(pathlib.Path().resolve()) + "/Tracing/Original/"
+    print(path)
     if choice == 0:
-        return getAny()
+        file = getAny(path)
+        return path + file
     elif choice == 1:
-        return getLetter()
+        file = getLetter(path)
+        return path + file
     elif choice == 2:
-        return getNumber()
+        file = getNumber(path)
+        return path + file
     elif choice == 3:
-        return getUpperCase()
+        file = getUpperCase(path)
+        return path + file
     elif choice == 4:
-        return getLowerCase()
+        file = getLowerCase(path)
+        return path + file
     elif choice == 5:
-        return getShape()
+        file = getShape(path)
+        return path + file
     else:
-        return getAny()
+        file = getAny(path)
+        return path + file
 
 # Returns any of the png files
-def getAny():
-    files = os.listdir("tracing/Original")
+def getAny(path):
+    files = os.listdir(path)
     return files[randrange(len(files))]
 
 # Returns a png that is a letter
-def getLetter():
+def getLetter(path):
     letters = []
-    for file in os.listdir("tracing/Original"):
+    for file in os.listdir(path):
         if file.__contains__("uc") or file.__contains__("lc"):
             letters.append(file)
     index = randrange(len(letters))
@@ -112,9 +122,9 @@ def getLetter():
     return letters[index]
 
 # Returns png that is a digit
-def getNumber():
+def getNumber(path):
     numbers = []
-    for file in os.listdir("tracing/Original"):
+    for file in os.listdir(path):
         if any(i.isdigit() for i in file):
             numbers.append(file)
     index = randrange(len(numbers))
@@ -122,9 +132,9 @@ def getNumber():
     return numbers[index]
 
 # Returns png that is an upper case letter
-def getUpperCase():
+def getUpperCase(path):
     letters = []
-    for file in os.listdir("tracing/Original"):
+    for file in os.listdir(path):
         if file.__contains__("uc"):
             letters.append(file)
     index = randrange(len(letters))
@@ -132,9 +142,9 @@ def getUpperCase():
     return letters[index]
 
 # Returns png that is a lower case letter
-def getLowerCase():
+def getLowerCase(path):
     letters = []
-    for file in os.listdir("tracing/Original"):
+    for file in os.listdir(path):
         if file.__contains__("lc"):
             letters.append(file)
     index = randrange(len(letters))
@@ -142,9 +152,9 @@ def getLowerCase():
     return letters[index]
 
 # Returns png that is a shape
-def getShape():
+def getShape(path):
     shapes = []
-    for file in os.listdir("tracing/Original"):
+    for file in os.listdir(path):
         if len(file) > 8:
             shapes.append(file)
     index = randrange(len(shapes))
@@ -155,7 +165,10 @@ def getShape():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    # print(trace("index", "indexTraced3"))
-    print(getOriginal(3))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    #print(trace("index", "indexTraced3"))
+    path = getOriginal(1)
+    print(path)
+    imageTest = cv2.imread(path)
+    cv2.imshow("test", imageTest)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
