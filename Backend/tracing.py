@@ -58,7 +58,6 @@ def trace(originalImage, tracedImage):
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
         # original = cv2.imread("tracing/Original/" + originalImage + ".png")
         # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
-        cv2.imshow("Original", original)
         validateImages(original, traced)
         cv2.imshow("Original Trace", traced)
         removeOutline(traced)
@@ -68,11 +67,15 @@ def trace(originalImage, tracedImage):
         traced_count = np.count_nonzero(np.all(traced != 255, 2))
         diff_count = np.count_nonzero(np.all(diff != 0, 2))
 
+        print(original_count)
+        print(traced_count)
+        print(diff_count)
         error_val = 10
 
         cv2.imshow("trace", traced)
         cv2.imshow("difference", diff)
         cv2.imshow("original", original)
+
 
         percentage = (1 - (diff_count / original_count)) * 100
         if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
@@ -180,11 +183,10 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    print(trace("index", "indexTraced3"))
+    print(trace("0", "canvas-image"))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)
     #cv2.imshow("test", imageTest)
-    generatePath()
     cv2.waitKey(0)
     cv2.destroyAllWindows()
