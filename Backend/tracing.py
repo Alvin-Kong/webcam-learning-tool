@@ -94,16 +94,16 @@ def getOriginal(choice):
         file = getNumber(path)
         return path + file
     elif choice == 3:
-        file = getUpperCase()
+        file = getUpperCase(path)
         return path + file
     elif choice == 4:
-        file = getLowerCase()
+        file = getLowerCase(path)
         return path + file
     elif choice == 5:
-        file = getShape()
+        file = getShape(path)
         return path + file
     else:
-        file = getAny()
+        file = getAny(path)
         return path + file
 
 # Returns any of the png files
