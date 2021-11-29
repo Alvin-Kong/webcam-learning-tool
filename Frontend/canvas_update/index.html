@@ -11,46 +11,45 @@
   </head>
 
   <body>
-    <div class="menu">
-      <div
-        class="btn"
-        id="brush"
-        style="background-image: url(img/brush.png)"
-      ></div>
 
-      <div
-        class="btn"
-        id="rect"
-        style="background-image: url(img/rectangle.png)"
-      ></div>
-      <div
-        class="btn"
-        id="arc"
-        style="background-image: url(img/arc.png)"
-      ></div>
+    <canvas id ="canvas" width="800px" height="600px" ></canvas>
+
+    <div class="rmenu">
+      <div class="rmenu-table-cell">
+        <div class="btn"id="brush" style="background-image: url(img/brush.png)"></div>
+        <div class="btn" id="rect" style="background-image: url(img/rectangle.png)"></div>
+        <div class="btn" id="arc" style="background-image: url(img/arc.png)"></div>
+        
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div class="btn download" style="background-image: url(img/download.png)"></div>
+        <div onclick="clear_canvas()" class="btn clear" style="background-image: url(img/clear.png)" id="clear"></div>
+        <div onclick="undo_last()" class="btn undo" style="background-image: url(img/undo.png)" id="undo"></div>
+      </div>
+      </div>
+    </div>
+
+    <div class="bmenu">
       <div class="btn line thin active"></div>
       <div class="btn line normal"></div>
       <div class="btn line thick"></div>
       <div class="btn"><input type="color" name="color" id="color" /></div>
-      <div
-        class="btn download"
-        style="background-image: url(img/download.png)"
-      ></div>
-      <div
-        onclick="clear_canvas()"
-        class="btn clear"
-        style="background-image: url(img/clear.png)"
-        id="clear"
-      ></div>
-      <div
-        onclick="undo_last()"
-        class="btn undo"
-        style="background-image: url(img/undo.png)"
-        id="undo"
-      ></div>
     </div>
-
-    <canvas id="canvas" width="800px" height="600px"></canvas>
 
     <script src="main.js"></script>
   </body>
