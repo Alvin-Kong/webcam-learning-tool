@@ -50,7 +50,7 @@ def trace(originalImage, tracedImage):
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
-        #  original = cv2.imread("tracing/Original/" + originalImage + ".png")
+        # original = cv2.imread("tracing/Original/" + originalImage + ".png")
         # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
         cv2.imshow("Original", original)
         validateImages(original, traced)
@@ -65,6 +65,7 @@ def trace(originalImage, tracedImage):
         error_val = 10
 
         cv2.imshow("trace", traced)
+        cv2.imshow("difference", diff)
         cv2.imshow("original", original)
 
         percentage = (1 - (diff_count / original_count)) * 100
@@ -81,20 +82,29 @@ def trace(originalImage, tracedImage):
 
 # Method to return a random png from different categories
 def getOriginal(choice):
+    path = str(pathlib.Path().resolve()) + "/Tracing/Original/"
+    print(path)
     if choice == 0:
-        return getAny()
+        path += getAny()
+        return path
     elif choice == 1:
-        return getLetter()
+        path += getLetter()
+        return path
     elif choice == 2:
-        return getNumber()
+        path += getNumber()
+        return path
     elif choice == 3:
-        return getUpperCase()
+        path += getUpperCase()
+        return path
     elif choice == 4:
-        return getLowerCase()
+        path += getLowerCase()
+        return path
     elif choice == 5:
-        return getShape()
+        path += getShape()
+        return path
     else:
-        return getAny()
+        path += getAny()
+        return path
 
 # Returns any of the png files
 def getAny():
@@ -155,7 +165,10 @@ def getShape():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    # print(trace("index", "indexTraced3"))
-    print(getOriginal(3))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    #print(trace("index", "indexTraced3"))
+    path = getOriginal(2)
+    print(path)
+    imageTest = cv2.imread(path)
+    cv2.imshow("test", imageTest)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
