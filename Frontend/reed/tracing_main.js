@@ -7,16 +7,23 @@ let allBtn = document.querySelectorAll(".btn");
 let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 
+change_background(1,"/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png");
 
-canvas.style.backgroundImage = "url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png')"
 
-function change_background(){
-    base_image = new Image();
-    base_image.src = '/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png';
-    base_image.onload = function(){
-        context.drawImage(background,0,0);
+function change_background(choice, string){
+    if (choice == 1)
+    {
+        url = "url("+ string + ")"
+        canvas.style.backgroundImage = url
     }
-  }
+    else
+    {
+        canvas.style.backgroundImage = "url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/9.png')"
+
+    }
+
+
+}
 
 // record  x and y coordinates point of brush
 var x = 0;
@@ -63,7 +70,6 @@ brushBtn.onclick = function () {
   })
   brushBtn.classList.add("active");
   board.type = "brush"
-  change_background();
 };
 
 

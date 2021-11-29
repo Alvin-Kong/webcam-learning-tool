@@ -185,6 +185,5 @@ if __name__ == '__main__':
     #print(path)
     #imageTest = cv2.imread(path)
     #cv2.imshow("test", imageTest)
-    generatePath()
     cv2.waitKey(0)
     cv2.destroyAllWindows()
