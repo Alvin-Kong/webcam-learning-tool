@@ -225,7 +225,13 @@ function undo_last(){
 // Function to get data from local API
 const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
-    let response = await axios.get(api_url)
+    let response = await axios.get(api_url, {
+      params: {
+          getTraceData: false,
+          getTemplatePath: false,
+          isOff: false,
+      }
+  })
     .catch(function(error) {
         console.log(error);
         alert(error);
@@ -258,9 +264,9 @@ document.addEventListener('keypress', async (e) => {
     console.log("Drawing Start")
     var startapiData = await getapiData();
     // console.log(startapiData);
-    var startCenter = startapiData.data.tracking_results["center"];
-    var startX = startapiData.data.tracking_results["x"];
-    var startY = startapiData.data.tracking_results["y"];
+    var startCenter = startapiData.data.tracking_response.tracking_results["center"];
+    var startX = startapiData.data.tracking_response.tracking_results["x"];
+    var startY = startapiData.data.tracking_response.tracking_results["y"];
     // console.log("start: " + startX + ", " + startY);
     limiter = 0;
 
@@ -268,9 +274,9 @@ document.addEventListener('keypress', async (e) => {
     while (board.canDraw) {
       var nextapiData = await getapiData();
       // console.log(nextapiData);
-      var nextCenter = nextapiData.data.tracking_results["center"];
-      var nextX = nextapiData.data.tracking_results["x"];
-      var nextY = nextapiData.data.tracking_results["y"];
+      var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
+      var nextX = nextapiData.data.tracking_response.tracking_results["x"];
+      var nextY = nextapiData.data.tracking_response.tracking_results["y"];
       // console.log("next: " + nextX + ", " + nextY);
       
       drawLine(startX, startY, nextX, nextY)
