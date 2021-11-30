@@ -51,8 +51,14 @@ def trace(originalImage, tracedImage):
         original = cv2.imread(pathOriginal + ".png")
 
         pathTrace = os.path.join(path, "Traced")
-        pathTrace = os.path.join(pathTrace, tracedImage)
-        traced = cv2.imread(path + "/Traced/" + tracedImage + ".png")
+        pathTraced = os.path.join(pathTrace, tracedImage)
+        traced = cv2.imread(pathTraced + ".png")
+
+        pathWhite = os.path.join(pathTrace, "canvas-image.png")
+        white = cv2.imread(pathWhite)
+
+        white = cv2.add(white,traced)
+        cv2.imshow("White", white)
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
@@ -60,12 +66,12 @@ def trace(originalImage, tracedImage):
         # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
         validateImages(original, traced)
         cv2.imshow("Original Trace", traced)
-        removeOutline(traced)
+        #removeOutline(traced)
         diff = cv2.subtract(original, traced)
 
-        original_count = np.count_nonzero(np.all(original == 0, 2))
-        traced_count = np.count_nonzero(np.all(traced != 255, 2))
-        diff_count = np.count_nonzero(np.all(diff != 0, 2))
+        original_count = np.sum(original == 0)
+        traced_count = np.sum(traced != 255)
+        diff_count = np.sum(diff != 0)
 
         print(original_count)
         print(traced_count)
@@ -77,14 +83,14 @@ def trace(originalImage, tracedImage):
         cv2.imshow("original", original)
 
 
-        percentage = (1 - (diff_count / original_count)) * 100
+        percentage = (1 - (diff_count / original_count)) * 100 + error_val
         if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
             return qualityBracket(0), 0
         else:
-            if ((1 - (diff_count / original_count)) * 100 + error_val) >= 100:
+            if percentage >= 100:
                 return qualityBracket(100), 100
             else:
-                return qualityBracket(percentage + error_val), round(percentage + error_val)
+                return qualityBracket(percentage), round(percentage)
     except Exception as e:
         print("Unable to open file")
         print(e)
@@ -183,7 +189,7 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    print(trace("0", "canvas-image"))
+    print(trace("a_uc", "canvas-image"))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)
