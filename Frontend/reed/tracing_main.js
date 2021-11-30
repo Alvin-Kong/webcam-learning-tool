@@ -63,6 +63,7 @@ var y = 0;
 //define array to store record of drawing
 let restore_array = [];
 let index = -1;
+let limiter = 0;
 
 //drawing board function
 var board = {
@@ -179,7 +180,13 @@ function undo_last(){
 // Function to get data from local API
 const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
-    let response = await axios.get(api_url)
+    let response = await axios.get(api_url, {
+      params: {
+          getTraceData: false,
+          getTemplatePath: false,
+          isOff: false,
+      }
+  })
     .catch(function(error) {
         console.log(error);
         alert(error);
@@ -212,18 +219,19 @@ document.addEventListener('keypress', async (e) => {
     console.log("Drawing Start")
     var startapiData = await getapiData();
     // console.log(startapiData);
-    var startCenter = startapiData.data.results["center"];
-    var startX = startapiData.data.results["x"];
-    var startY = startapiData.data.results["y"];
+    var startCenter = startapiData.data.tracking_response.tracking_results["center"];
+    var startX = startapiData.data.tracking_response.tracking_results["x"];
+    var startY = startapiData.data.tracking_response.tracking_results["y"];
     // console.log("start: " + startX + ", " + startY);
+    limiter = 0;
 
     // Main while loop to draw
     while (board.canDraw) {
       var nextapiData = await getapiData();
       // console.log(nextapiData);
-      var nextCenter = nextapiData.data.results["center"];
-      var nextX = nextapiData.data.results["x"];
-      var nextY = nextapiData.data.results["y"];
+      var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
+      var nextX = nextapiData.data.tracking_response.tracking_results["x"];
+      var nextY = nextapiData.data.tracking_response.tracking_results["y"];
       // console.log("next: " + nextX + ", " + nextY);
       
       drawLine(startX, startY, nextX, nextY)
@@ -233,21 +241,23 @@ document.addEventListener('keypress', async (e) => {
         if (event.code === 'Space') {
           board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
           board.canDraw = false;
-          console.log("Drawing Stop")
+
+          restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+          limiter += 1;
+          if (limiter == 1) {
+            index += 1;
+            console.log("index" + index)
+            // console.log(restore_array);
+            console.log("Drawing Stop")
+          }
         }
       });
-
+      
       startX = nextX;
       startY = nextY;
     }
   }
 });
-
-//make_base('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png');
-//make_base();
-
-// HTML
-// style = "background-image: url('/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/8.png');"
 
 
 // Function to create drawing lines
