@@ -1,17 +1,21 @@
 import flask
-from flask import request
+from flask import Flask, request, redirect, url_for
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 import cv2
 import asyncio
 import json
 import sys
-import requests
 import threading
+import os
 
 import tracing
 
-app = flask.Flask(__name__)
+UPLOAD_FOLDER = '.'
+ALLOWED_EXTENSIONS = {'png', 'jpeg'}
+
+app = Flask(__name__)
 cors = CORS(app)
 
 objectTracker = object()
@@ -20,10 +24,14 @@ getTraceData = None
 getTemplatePath = None
 isOff = False
 filepathInput = {}
-# filepathInput["postTemplatePath"] = 'index'
-# filepathInput["postImagePath"] = 'indexTraced3'
 templateType = None
-completed = "Data POSTed"
+file = None
+
+
+# Makes sure only the allowed file types are allowed to be posted to the API
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Main function to respond to requests
@@ -36,20 +44,20 @@ def home():
         getTraceData = getTemplatePath = isOff = None
         if "getTraceData" in query:
             getTraceData = query["getTraceData"]
-            print("getTraceData: ", getTraceData)
+            # print("getTraceData: ", getTraceData)
 
         if "getTemplatePath" in query:
             getTemplatePath = query["getTemplatePath"]
-            print("getTemplatePath: ", getTemplatePath)
+            # print("getTemplatePath: ", getTemplatePath)
 
         if "isOff" in query:
             isOff = query["isOff"]
-            print("isOff: ", isOff)
+            # print("isOff: ", isOff)
 
-        # return an error if the "get" query doesn't contain the required parameters
-        if is_any_none(getTraceData, getTemplatePath, isOff):
-            return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
-                "Content-Type": "application/json"}
+        # Return an error if the "get" query doesn't contain the required parameters
+        # if is_any_none(getTraceData, getTemplatePath, isOff):
+        #     return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
+        #         "Content-Type": "application/json"}
 
         response = {}
 
@@ -59,59 +67,64 @@ def home():
                 "Content-Type": "application/json"}
             else:
                 response["tracing_response"] = asyncio.run(build_tracing_response())
-                print("tracing_response: ", response["tracing_response"])
+                # print("tracing_response: ", response["tracing_response"])
 
         if getTemplatePath == "true":
             response["template_response"] = asyncio.run(build_template_response())
-            print("template_response: ", response["template_response"])
+            # print("template_response: ", response["template_response"])
 
 
         if isOff == "false" or None:
             response["tracking_response"] = asyncio.run(build_tracking_response())
-            print("tracking_response: ", response["tracking_response"])
+            # print("tracking_response: ", response["tracking_response"])
         
         return json.dumps(response), {"Content-Type": "application/json"}
 
     # POST method
     if request.method == 'POST':
         query = json.loads(request.data.decode('utf-8'))
-        postImagePath = postTemplatePath = postTemplateType = None
+        postImagePath = postTemplatePath = postTemplateType = file = None
         if "postImagePath" in query:
             postImagePath = query["postImagePath"]
-            print("postImagePath: ", postImagePath)
+            # print("postImagePath: ", postImagePath)
 
         if "postTemplatePath" in query:
             postTemplatePath = query["postTemplatePath"]
-            print("postTemplatePath: ", postTemplatePath)
+            # print("postTemplatePath: ", postTemplatePath)
 
         if "postTemplateType" in query:
             postTemplateType = query["postTemplateType"]
-            print("postTemplateType: ", postTemplateType)
+            # print("postTemplateType: ", postTemplateType)
 
-        # return an error if the "post" query doesn't contain the required parameters
-        if is_any_none(postImagePath, postTemplatePath, postTemplateType):
-            return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
-                "Content-Type": "application/json"}
+        if "file" in query:
+            file = query["file"]
+            # print("file: ", file)
+
+        # Return an error if the "post" query doesn't contain the required parameters
+        # if is_any_none(postImagePath, postTemplatePath, postTemplateType):
+        #     return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
+        #         "Content-Type": "application/json"}
 
         if postImagePath is not None:
             filepathInput["postImagePath"] = postImagePath
-            print("postImagePath: ", filepathInput["postImagePath"])
-
+            # print("postImagePath: ", filepathInput["postImagePath"])
 
         if postTemplatePath is not None:
             filepathInput["postTemplatePath"] = postTemplatePath
-            print("postTemplatePath: ", filepathInput["postTemplatePath"])
+            # print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
         if postTemplateType is not None:
             templateType = postTemplateType
-            print("postTemplateType: ", templateType)
+            # print("postTemplateType: ", templateType)
 
-        return json.dumps(completed), {"Content-Type": "application/json"}
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('download_file', name=filename))
 
-
-    # else:
-    #     return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
-    #         "Content-Type": "application/json"}
+    else:
+        return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
+            "Content-Type": "application/json"}
 
 
 # Test if any argument is equal to None
@@ -146,8 +159,8 @@ async def build_tracking_response():
 # Function to build a json response containing the returned data from tracing.py's trace method
 async def get_tracing_stats():
     response = {}
-    print("postTemplatePath: ", filepathInput["postTemplatePath"])
-    print("postImagePath: ", filepathInput["postImagePath"])
+    # print("postTemplatePath: ", filepathInput["postTemplatePath"])
+    # print("postImagePath: ", filepathInput["postImagePath"])
     response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"])
     return response
 

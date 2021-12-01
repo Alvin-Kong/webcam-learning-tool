@@ -27,23 +27,23 @@
             // return response;
         }
 
-        async function sendData2(postImgPath, postTempPath, postTempType) {
-            let response = await axios({
-                method: 'POST',
-                url: api_url,
-                data: {
-                    postImagePath: postImgPath,
-                    postTemplatePath: postTempPath,
-                    postTemplateType: postTempType
-                }
-            })
-            .catch(function(error) {
-                console.log(error);
-                alert(error)
-            });
-            console.log(response)
-            return response
-        }
+        // async function sendData2(postImgPath, postTempPath, postTempType) {
+        //     let response = await axios({
+        //         method: 'POST',
+        //         url: api_url,
+        //         data: {
+        //             postImagePath: postImgPath,
+        //             postTemplatePath: postTempPath,
+        //             postTemplateType: postTempType
+        //         }
+        //     })
+        //     .catch(function(error) {
+        //         console.log(error);
+        //         alert(error)
+        //     });
+        //     console.log(response)
+        //     return response
+        // }
 
         
         async function getData() {
