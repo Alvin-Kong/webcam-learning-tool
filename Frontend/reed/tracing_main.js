@@ -14,43 +14,50 @@ function change_background(choice){
     clear_canvas()
     if (choice == 0)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
+        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/u_lc.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else if (choice == 1)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
+       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/r_uc.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else if (choice == 2)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
+       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/4.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else if (choice == 3)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
+       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/l_uc.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else if (choice == 4)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/4.png"
+       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/4.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/b_lc.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else if (choice == 5)
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/5.png"
+        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/5.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/square.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
     else
     {
-        string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
+        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
+        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
@@ -105,17 +112,33 @@ brushBtn.onclick = function () {
 };
 
 
+async function sendData(postImgPath, postTempPath, postTempType) {
+  let response = await axios.post(api_url, {
+      postImagePath: postImgPath,
+      postTemplatePath: postTempPath,
+      postTemplateType: postTempType
+  })
+  .catch(function(error) {
+      console.log(error);
+      alert(error);
+  });
+}
+
+
 //download button
 downloadBtn.onclick = function(){
-  var url = canvas.toDataURL()
-  console.log(url);
-  const a = document.createElement("a");
-  document.body.appendChild(a);
-  a.href = canvas.toDataURL();
-  window.open
-  a.download = "canvas-image.png";
-  a.click();
-  document.body.removeChild(a);
+  // var url = canvas.toDataURL()
+  // console.log(url);
+  // const a = document.createElement("a");
+  // document.body.appendChild(a);
+  // a.href = canvas.toDataURL();
+  // window.open
+  // a.download = "canvas-image.png";
+  // a.click();
+  // document.body.removeChild(a);
+
+  alert("Very Good!!")
+
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
