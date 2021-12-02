@@ -33,9 +33,9 @@ async function getChoice(choice)
 
 async function change_background(choice){
     clear_canvas()
-    var idk = await getChoice(choice)
-    console.log(idk)
-    url = "url(" + str(idk) + ")"
+    var path = await getChoice(choice)
+    console.log(path)
+    url = "url(" + str(path) + ")"
     canvas.style.backgroundImage = url
     /*
     if (choice == 0)
