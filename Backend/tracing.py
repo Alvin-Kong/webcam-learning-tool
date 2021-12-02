@@ -46,26 +46,29 @@ def trace(originalImage, tracedImage):
     try:
         path = generatePath()
         pathOriginal = os.path.join(path, "Original")
-        pathOriginal = os.path.join(pathOriginal, originalImage)
+        pathOriginal2 = os.path.join(pathOriginal, originalImage)
 
-        original = cv2.imread(pathOriginal + ".png")
+        original = cv2.imread(pathOriginal2 + ".png")
 
         pathTrace = os.path.join(path, "Traced")
         pathTraced = os.path.join(pathTrace, tracedImage)
-        traced = cv2.imread(pathTraced + ".png")
+        traced = cv2.imread(pathTraced + ".png", cv2.IMREAD_UNCHANGED)
 
-        #pathWhite = os.path.join(pathTrace, "canvas-image.png")
-        #white = cv2.imread(pathWhite)
+        # make mask of where the transparent bits are
+        mask = traced[:, :, 3] == 0
 
-        #white = cv2.add(white,traced)
-        #cv2.imshow("White", white)
+        # replace areas of transparency with white and not transparent
+        traced[mask] = [255, 255, 255, 255]
+
+        # new image without alpha channel...
+        traced = cv2.cvtColor(traced, cv2.COLOR_BGRA2BGR)
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
         # original = cv2.imread("tracing/Original/" + originalImage + ".png")
         # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
         validateImages(original, traced)
-        cv2.imshow("Original Trace", traced)
+
         #removeOutline(traced)
         diff = cv2.subtract(original, traced)
 
@@ -76,12 +79,14 @@ def trace(originalImage, tracedImage):
         print(original_count)
         print(traced_count)
         print(diff_count)
-        error_val = 10
+        error_val = 0
+
+        added_image = cv2.addWeighted(original, 0.4, traced, 0.1, 0)
+        cv2.imshow("overlay", added_image)
 
         cv2.imshow("trace", traced)
         cv2.imshow("difference", diff)
         cv2.imshow("original", original)
-
 
         percentage = (1 - (diff_count / original_count)) * 100 + error_val
         if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
@@ -92,7 +97,6 @@ def trace(originalImage, tracedImage):
             else:
                 return qualityBracket(percentage), round(percentage)
     except Exception as e:
-        print("Unable to open file")
         print(e)
 
 # Method to return a random png from different categories
@@ -189,11 +193,11 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    # print(trace("a_uc", "canvas-image"))
-    print(trace("index", "indexTraced3"))
+    print(trace("triangle", "canvas-image"))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)
     #cv2.imshow("test", imageTest)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
