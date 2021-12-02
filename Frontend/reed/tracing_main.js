@@ -10,8 +10,28 @@ let backgroundBtn = document.querySelector("#background");
 
 background = ""
 
+async function getData(choice) {
+            let response = await axios.get(api_url, {
+                params: {
+                    getTemplatePath: choice
+                }
+            })
+            .catch(function(error) {
+                console.log(error);
+                alert(error);
+            });
+            // console.log(response)
+            return response;
+        }
+async function getChoice(choice)
+{
+   var path = await getData(choice)
+   return path
+}
+
 function change_background(choice){
     clear_canvas()
+    console.log(getChoice(choice))
     if (choice == 0)
     {
         // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
