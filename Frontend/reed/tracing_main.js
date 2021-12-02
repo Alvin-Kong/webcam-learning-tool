@@ -11,27 +11,35 @@ let backgroundBtn = document.querySelector("#background");
 background = ""
 
 async function getData(choice) {
-            let response = await axios.get(api_url, {
-                params: {
-                    getTemplatePath: choice
-                }
-            })
-            .catch(function(error) {
-                console.log(error);
-                alert(error);
-            });
-            // console.log(response)
-            return response;
-        }
+  let response = await axios.get(api_url, {
+    params: {
+      getTemplatePath: choice
+    }
+  })
+  .catch(function(error) {
+    console.log(error);
+    alert(error);
+  });
+  // console.log(response)
+  return response;
+}
+
 async function getChoice(choice)
 {
-   var path = await getData(choice)
+   var received_data = await getData(choice)
+   var path = received_data.data.template_response.template_results["template"]
    return path
 }
 
-function change_background(choice){
+async function getIDK(choice) {
+  var idontfkingknow = await getChoice(choice)
+  return idontfkingknow
+}
+
+async function change_background(choice){
     clear_canvas()
-    console.log(getChoice(choice))
+    var idk = await getChoice(choice)
+    console.log(idk)
     if (choice == 0)
     {
         // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
