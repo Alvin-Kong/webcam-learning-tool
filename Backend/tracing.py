@@ -102,22 +102,22 @@ def trace(originalImage, tracedImage):
 # Method to return a random png from different categories
 def getOriginal(choice):
     path = os.path.join(generatePath(), "Original")
-    if choice == 0:
+    if choice == "0":
         file = getAny(path)
         return os.path.join(path, file)
-    elif choice == 1:
+    elif choice == "1":
         file = getLetter(path)
         return os.path.join(path, file)
-    elif choice == 2:
+    elif choice == "2":
         file = getNumber(path)
         return os.path.join(path, file)
-    elif choice == 3:
+    elif choice == "3":
         file = getUpperCase(path)
         return os.path.join(path, file)
-    elif choice == 4:
+    elif choice == "4":
         file = getLowerCase(path)
         return os.path.join(path, file)
-    elif choice == 5:
+    elif choice == "5":
         file = getShape(path)
         return os.path.join(path, file)
     else:
@@ -126,14 +126,17 @@ def getOriginal(choice):
 
 # Returns any of the png files
 def getAny(path):
-    files = os.listdir(path)
-    return files[randrange(len(files))]
+    images = []
+    for file in os.listdir(path):
+        if file.endswith(".png"):
+            images.append(file)
+    return images[randrange(len(images))]
 
 # Returns a png that is a letter
 def getLetter(path):
     letters = []
     for file in os.listdir(path):
-        if file.__contains__("uc") or file.__contains__("lc"):
+        if file.endswith(".png") and file.__contains__("uc") or file.__contains__("lc"):
             letters.append(file)
     index = randrange(len(letters))
     print(letters[index])
@@ -143,7 +146,7 @@ def getLetter(path):
 def getNumber(path):
     numbers = []
     for file in os.listdir(path):
-        if any(i.isdigit() for i in file):
+        if file.endswith(".png") and any(i.isdigit() for i in file):
             numbers.append(file)
     index = randrange(len(numbers))
     print(numbers[index])
@@ -153,7 +156,7 @@ def getNumber(path):
 def getUpperCase(path):
     letters = []
     for file in os.listdir(path):
-        if file.__contains__("uc"):
+        if file.endswith(".png") and file.__contains__("uc"):
             letters.append(file)
     index = randrange(len(letters))
     print(letters[index])
@@ -163,7 +166,7 @@ def getUpperCase(path):
 def getLowerCase(path):
     letters = []
     for file in os.listdir(path):
-        if file.__contains__("lc"):
+        if file.endswith(".png") and file.__contains__("lc"):
             letters.append(file)
     index = randrange(len(letters))
     print(letters[index])
@@ -173,7 +176,7 @@ def getLowerCase(path):
 def getShape(path):
     shapes = []
     for file in os.listdir(path):
-        if len(file) > 8:
+        if file.endswith(".png") and len(file) > 8:
             shapes.append(file)
     index = randrange(len(shapes))
     print(shapes[index])
@@ -193,7 +196,9 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    print(trace("triangle", "canvas-image"))
+    # print(trace("triangle", "canvas-image"))
+    for i in range(10):
+        print(getOriginal(3))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)

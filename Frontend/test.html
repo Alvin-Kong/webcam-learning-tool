@@ -12,9 +12,12 @@
         
         async function sendData(postImgPath, postTempPath, postTempType, filename) {
             let response = await axios.post(api_url, {
-                postImagePath: postImgPath,
-                postTemplatePath: postTempPath,
-                postTemplateType: postTempType,
+                data: {
+                    postImagePath: postImgPath,
+                    postTemplatePath: postTempPath,
+                    postTemplateType: postTempType,
+                }
+                
                 // file: filename
             })
             .catch(function(error) {
@@ -70,7 +73,7 @@
         }
 
         postMain()
-        getMain()
+        // getMain()
     </script>
 </body>
 </html>
