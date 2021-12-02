@@ -31,15 +31,13 @@ async function getChoice(choice)
    return path
 }
 
-async function getIDK(choice) {
-  var idontfkingknow = await getChoice(choice)
-  return idontfkingknow
-}
-
 async function change_background(choice){
     clear_canvas()
     var idk = await getChoice(choice)
     console.log(idk)
+    url = "url(" + str(idk) + ")"
+    canvas.style.backgroundImage = url
+    /*
     if (choice == 0)
     {
         // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
@@ -89,6 +87,7 @@ async function change_background(choice){
         url = "url("+ string + ")"
         canvas.style.backgroundImage = url
     }
+    */
 }
 
 // record  x and y coordinates point of brush
