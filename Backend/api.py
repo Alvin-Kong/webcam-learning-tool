@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, redirect, url_for, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -13,7 +13,7 @@ import requests
 
 import tracing
 
-UPLOAD_FOLDER = '/Users/alvin/webcam-learning-tool/Backend'
+UPLOAD_FOLDER = '/Users/alvin/webcam-learning-tool/Backend/Tracing'
 ALLOWED_EXTENSIONS = {'png', 'jpeg'}
 
 app = Flask(__name__)
@@ -23,7 +23,6 @@ cors = CORS(app)
 objectTracker = object()
 
 getTraceData = None
-getTemplatePath = None
 isOff = False
 filepathInput = {}
 templateType = None
@@ -31,9 +30,9 @@ file = None
 
 
 # Makes sure only the allowed file types are allowed to be posted to the API
-# def allowed_file(filename):
-#     return '.' in filename and \
-#         filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Main function to respond to requests
@@ -50,16 +49,12 @@ def home():
 
         if "getTemplatePath" in query:
             getTemplatePath = query["getTemplatePath"]
+            # print(type(getTemplatePath))
             # print("getTemplatePath: ", getTemplatePath)
 
         if "isOff" in query:
             isOff = query["isOff"]
             # print("isOff: ", isOff)
-
-        # Return an error if the "get" query doesn't contain the required parameters
-        # if is_any_none(getTraceData, getTemplatePath, isOff):
-        #     return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
-        #         "Content-Type": "application/json"}
 
         response = {}
 
@@ -84,10 +79,14 @@ def home():
 
     # POST method
     if request.method == 'POST':
+        # print(request)
+        # print(type(request.data))
+        # print(type(request.files))
+        # print(request.files)
         query = json.loads(request.data.decode('utf-8'))
-        print(request)
-        print(query)
-        postImagePath = postTemplatePath = postTemplateType = file = None
+        # query = json.loads(request.data.decode('ascii'))
+        # query = request.data
+        postImagePath = postTemplatePath = None
         if "postImagePath" in query:
             postImagePath = query["postImagePath"]
             # print("postImagePath: ", postImagePath)
@@ -95,21 +94,6 @@ def home():
         if "postTemplatePath" in query:
             postTemplatePath = query["postTemplatePath"]
             # print("postTemplatePath: ", postTemplatePath)
-
-        # if "postTemplateType" in query:
-        #     postTemplateType = query["postTemplateType"]
-            # print("postTemplateType: ", postTemplateType)
-
-        if "file" in query:
-            print("file: ", query["file"])
-            file = request.files["file"]
-            print("file: ", file)
-            
-
-        # Return an error if the "post" query doesn't contain the required parameters
-        # if is_any_none(postImagePath, postTemplatePath, postTemplateType):
-        #     return json.dumps(generateError("Query did not contain all required arguments.")), 400, {
-        #         "Content-Type": "application/json"}
 
         if postImagePath is not None:
             filepathInput["postImagePath"] = postImagePath
@@ -119,25 +103,38 @@ def home():
             filepathInput["postTemplatePath"] = postTemplatePath
             # print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
-        # if postTemplateType is not None:
-        #     templateType = postTemplateType
-            # print("postTemplateType: ", templateType)
-
-        # if file is not None and allowed_file(file):
-        #     filename = secure_filename(file)
-        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #     return redirect(url_for('download_file', name=filename))
-
-        if file is not None:
-            filename = secure_filename(file)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
-
         return json.dumps("data posted"), {"Content-Type": "application/json"}
 
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
             "Content-Type": "application/json"}
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        if "file" in request.files:
+            file = request.files["file"]
+            print("file: ", file)
+            if file.filename == '':
+                print("ERROR: no selected file")
+                return redirect(request.url)
+        else:
+            print("ERROR: no file in request query")
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(filename)
+            print(os.path.join(app.config['UPLOAD_FOLDER']))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('download_file', name=filename))
+
+    return json.dumps("file uploaded"), {"Content-Type": "application/json"}
+
+
+@app.route('/upload/<name>')
+def download_file(name):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
 # Test if any argument is equal to None
@@ -182,6 +179,7 @@ async def get_tracing_stats():
 async def get_template(choice):
     response = {}
     response["template"] = tracing.getOriginal(choice)
+    print("response_template: ", response["template"])
     return response
 
 

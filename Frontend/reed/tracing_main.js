@@ -10,7 +10,8 @@ let backgroundBtn = document.querySelector("#background");
 
 background = ""
 
-async function getData(choice) {
+async function getTemplate(choice) {
+  console.log(choice)
   let response = await axios.get(api_url, {
     params: {
       getTemplatePath: choice
@@ -26,69 +27,25 @@ async function getData(choice) {
 
 async function getChoice(choice)
 {
-   var received_data = await getData(choice)
+  console.log(choice)
+   var received_data = await getTemplate(choice)
    var path = received_data.data.template_response.template_results["template"]
    return path
 }
 
 async function change_background(choice){
-    clear_canvas()
-    var path = await getChoice(choice)
-    console.log(path)
-    url = "url(" + str(path) + ")"
-    canvas.style.backgroundImage = url
-    /*
-    if (choice == 0)
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/u_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 1)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/r_uc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 2)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/4.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 3)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/l_uc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 4)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/4.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/b_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 5)
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/5.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/square.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    */
+  console.log("choice: ", choice)
+  clear_canvas()
+  var path = await getChoice(choice)
+  // console.log(path)
+  string = path.replace('C:','')
+  string = string.replaceAll('\\', '/')
+  console.log(string)
+  url = "url(" + String(string) + ")"
+  // console.log(url)
+  canvas.style.backgroundImage = url
 }
+
 
 // record  x and y coordinates point of brush
 var x = 0;
@@ -139,31 +96,23 @@ brushBtn.onclick = function () {
 };
 
 
-async function sendData(postImgPath, postTempPath, postTempType) {
-  let response = await axios.post(api_url, {
-    postImagePath: postImgPath,
-    postTemplatePath: postTempPath,
-    postTemplateType: postTempType
-  })
-  .catch(function(error) {
-      console.log(error);
-      alert(error);
-  });
-}
-
+upload_api_url = 'http://127.0.0.1:5000/uploads'
 async function fileUpload(filename) {
-  let response = await axios.post(api_url, {
+  let response = await axios.post(upload_api_url, {
     file: filename
   })
   .catch(function(error) {
     console.log(error);
     alert(error);
   });
+
+  return response
 }
 
 
 async function sendFile(filename) {
-  await fileUpload(filename)
+  let response = await fileUpload(filename)
+  return response
 }
 
 
@@ -175,10 +124,11 @@ downloadBtn.onclick = function(){
   document.body.appendChild(a);
   a.href = canvas.toDataURL();
   // window.open
-  // a.download = "canvas-image.png";
+  a.download = "canvas-image.png";
+  a.click();
   sendFile(a.href);
-  // a.click();
   document.body.removeChild(a);
+  
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
