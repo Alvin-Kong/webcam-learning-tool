@@ -4,46 +4,26 @@
 <head>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     
-    <title>Webcam Learning Tool</title>
+    <title>Test</title>
 </head>
 <body style="border: 0; margin: 40px;">
     <script>
-        // get data from local API
         const api_url = 'http://127.0.0.1:5000/';
-        async function sendData(postImgPath, postTempPath, postTempType) {
+        
+        async function sendData(postImgPath, postTempPath, postTempType, filename) {
             let response = await axios.post(api_url, {
                 postImagePath: postImgPath,
                 postTemplatePath: postTempPath,
-                postTemplateType: postTempType
+                postTemplateType: postTempType,
+                file: filename
             })
-            // .then(function(response) {
-            //     console.log(response)
-            // })
             .catch(function(error) {
                 console.log(error);
                 alert(error);
             });
             // console.log(response)
-            // return response;
+            return response;
         }
-
-        // async function sendData2(postImgPath, postTempPath, postTempType) {
-        //     let response = await axios({
-        //         method: 'POST',
-        //         url: api_url,
-        //         data: {
-        //             postImagePath: postImgPath,
-        //             postTemplatePath: postTempPath,
-        //             postTemplateType: postTempType
-        //         }
-        //     })
-        //     .catch(function(error) {
-        //         console.log(error);
-        //         alert(error)
-        //     });
-        //     console.log(response)
-        //     return response
-        // }
 
         
         async function getData() {
@@ -54,9 +34,6 @@
                     isOff: false,
                 }
             })
-            // .then(function(response){
-            //     console.log(response)
-            // })
             .catch(function(error) {
                 console.log(error);
                 alert(error);
@@ -70,7 +47,8 @@
             let postImgPath = 'indexTraced3'
             let postTempPath = 'index'
             let postTempType = 0
-            var data = await sendData(postImgPath, postTempPath, 0)
+            let file = '/Users/alvin/webcam-learning-tool/Backend/Tracing/indexTraced3'
+            var data = await sendData(postImgPath, postTempPath, 0, file)
             return data
         }
 
@@ -92,7 +70,7 @@
         }
 
         postMain()
-        getMain()
+        // getMain()
     </script>
 </body>
 </html>

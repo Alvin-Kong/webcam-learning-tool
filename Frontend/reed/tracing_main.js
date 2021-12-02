@@ -114,9 +114,9 @@ brushBtn.onclick = function () {
 
 async function sendData(postImgPath, postTempPath, postTempType) {
   let response = await axios.post(api_url, {
-      postImagePath: postImgPath,
-      postTemplatePath: postTempPath,
-      postTemplateType: postTempType
+    postImagePath: postImgPath,
+    postTemplatePath: postTempPath,
+    postTemplateType: postTempType
   })
   .catch(function(error) {
       console.log(error);
@@ -124,21 +124,34 @@ async function sendData(postImgPath, postTempPath, postTempType) {
   });
 }
 
+async function fileUpload(filename) {
+  let response = await axios.post(api_url, {
+    file: filename
+  })
+  .catch(function(error) {
+    console.log(error);
+    alert(error);
+  });
+}
+
+
+async function sendFile(filename) {
+  await fileUpload(filename)
+}
+
 
 //download button
 downloadBtn.onclick = function(){
   // var url = canvas.toDataURL()
   // console.log(url);
-  // const a = document.createElement("a");
-  // document.body.appendChild(a);
-  // a.href = canvas.toDataURL();
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.href = canvas.toDataURL();
   // window.open
   // a.download = "canvas-image.png";
+  sendFile(a.href);
   // a.click();
-  // document.body.removeChild(a);
-
-  alert("Very Good!!")
-
+  document.body.removeChild(a);
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas

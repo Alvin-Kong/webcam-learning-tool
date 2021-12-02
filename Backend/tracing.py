@@ -54,11 +54,11 @@ def trace(originalImage, tracedImage):
         pathTraced = os.path.join(pathTrace, tracedImage)
         traced = cv2.imread(pathTraced + ".png")
 
-        pathWhite = os.path.join(pathTrace, "canvas-image.png")
-        white = cv2.imread(pathWhite)
+        #pathWhite = os.path.join(pathTrace, "canvas-image.png")
+        #white = cv2.imread(pathWhite)
 
-        white = cv2.add(white,traced)
-        cv2.imshow("White", white)
+        #white = cv2.add(white,traced)
+        #cv2.imshow("White", white)
 
         # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
         # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
@@ -189,7 +189,8 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    print(trace("a_uc", "canvas-image"))
+    # print(trace("a_uc", "canvas-image"))
+    print(trace("index", "indexTraced3"))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)
