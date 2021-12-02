@@ -227,9 +227,7 @@ const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
     let response = await axios.get(api_url, {
       params: {
-          getTraceData: false,
-          getTemplatePath: false,
-          isOff: false,
+        isOff: false,
       }
   })
     .catch(function(error) {

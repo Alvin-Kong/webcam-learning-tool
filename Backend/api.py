@@ -1,5 +1,5 @@
 import flask
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, render_template
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -9,13 +9,15 @@ import json
 import sys
 import threading
 import os
+import requests
 
 import tracing
 
-UPLOAD_FOLDER = '.'
+UPLOAD_FOLDER = '/Users/alvin/webcam-learning-tool/Backend'
 ALLOWED_EXTENSIONS = {'png', 'jpeg'}
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 cors = CORS(app)
 
 objectTracker = object()
@@ -29,9 +31,9 @@ file = None
 
 
 # Makes sure only the allowed file types are allowed to be posted to the API
-def allowed_file(filename):
-    return '.' in filename and \
-        filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
+# def allowed_file(filename):
+#     return '.' in filename and \
+#         filename.rsplit('.',1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # Main function to respond to requests
@@ -69,8 +71,8 @@ def home():
                 response["tracing_response"] = asyncio.run(build_tracing_response())
                 # print("tracing_response: ", response["tracing_response"])
 
-        if getTemplatePath == "true":
-            response["template_response"] = asyncio.run(build_template_response())
+        if getTemplatePath is not None:
+            response["template_response"] = asyncio.run(build_template_response(getTemplatePath))
             # print("template_response: ", response["template_response"])
 
 
@@ -83,6 +85,8 @@ def home():
     # POST method
     if request.method == 'POST':
         query = json.loads(request.data.decode('utf-8'))
+        print(request)
+        print(query)
         postImagePath = postTemplatePath = postTemplateType = file = None
         if "postImagePath" in query:
             postImagePath = query["postImagePath"]
@@ -92,13 +96,15 @@ def home():
             postTemplatePath = query["postTemplatePath"]
             # print("postTemplatePath: ", postTemplatePath)
 
-        if "postTemplateType" in query:
-            postTemplateType = query["postTemplateType"]
+        # if "postTemplateType" in query:
+        #     postTemplateType = query["postTemplateType"]
             # print("postTemplateType: ", postTemplateType)
 
         if "file" in query:
-            file = query["file"]
-            # print("file: ", file)
+            print("file: ", query["file"])
+            file = request.files["file"]
+            print("file: ", file)
+            
 
         # Return an error if the "post" query doesn't contain the required parameters
         # if is_any_none(postImagePath, postTemplatePath, postTemplateType):
@@ -113,14 +119,21 @@ def home():
             filepathInput["postTemplatePath"] = postTemplatePath
             # print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
-        if postTemplateType is not None:
-            templateType = postTemplateType
+        # if postTemplateType is not None:
+        #     templateType = postTemplateType
             # print("postTemplateType: ", templateType)
 
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        # if file is not None and allowed_file(file):
+        #     filename = secure_filename(file)
+        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #     return redirect(url_for('download_file', name=filename))
+
+        if file is not None:
+            filename = secure_filename(file)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return redirect(url_for('download_file', name=filename))
+
+        return json.dumps("data posted"), {"Content-Type": "application/json"}
 
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
@@ -143,9 +156,9 @@ async def build_tracing_response():
 
 
 # Build a response to send the template file that will be used for tracing mode
-async def build_template_response():
+async def build_template_response(choice):
     response = {}
-    response["template_results"] = await get_template()
+    response["template_results"] = await get_template(choice)
     return response
 
 
@@ -166,9 +179,9 @@ async def get_tracing_stats():
 
 
 # Function to build a json response containing the file path to the template file to be used during tracing mode
-async def get_template():
+async def get_template(choice):
     response = {}
-    response["template"] = tracing.getOriginal(templateType)
+    response["template"] = tracing.getOriginal(choice)
     return response
 
 
