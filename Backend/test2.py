@@ -48,11 +48,12 @@
 
 
 import os
+import json
 from flask import Flask, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = '/Users/alvin/Desktop'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png','jpeg'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -67,21 +68,40 @@ def upload_file():
         # check if the post request has the file part
         print("request: ", request)
         print("request.files: ", request.files)
-        if 'file' not in request.files:
-            print('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            print('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            print(filename)
-            print(os.path.join(app.config['UPLOAD_FOLDER']))
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+        # if 'file' not in request.files:
+        #     print('No file part')
+        #     return redirect(request.url)
+        # file = request.files['file']
+        # # If the user does not select a file, the browser submits an
+        # # empty file without a filename.
+        # if file.filename == '':
+        #     print('No selected file')
+        #     return redirect(request.url)
+        # if file and allowed_file(file.filename):
+        #     filename = secure_filename(file.filename)
+        #     print(filename)
+        #     print(os.path.join(app.config['UPLOAD_FOLDER']))
+        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #     return redirect(url_for('download_file', name=filename))
+
+        if "file" in request.files:
+            file = request.files["file"]
+            print("file: ", file)
+            # if file.filename == '':
+            #     print("ERROR: no selected file")
+            #     return redirect(request.url)
+            # elif file and allowed_file(file.filename):
+            #     filename = secure_filename(file.filename)
+            #     print(filename)
+            #     print(os.path.join(app.config['UPLOAD_FOLDER']))
+            #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            #     return redirect(url_for('download_file', name=filename))
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
+            return redirect(url_for('download_file', name="canvas-image.png"))
+        else:
+            print("ERROR: no file in request query")
+            return json.dumps("no file detected"), {"Content-Type": "application/json"}
+
     return
 
 

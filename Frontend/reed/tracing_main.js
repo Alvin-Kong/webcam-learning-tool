@@ -96,9 +96,9 @@ brushBtn.onclick = function () {
 };
 
 
-upload_api_url = 'http://127.0.0.1:5000/uploads'
+upload_api_url = 'http://127.0.0.1:5000/upload'
 async function fileUpload(filename) {
-  let response = await axios.post(upload_api_url, {
+  let response = await axios.post(api_url, {
     file: filename
   })
   .catch(function(error) {
@@ -117,18 +117,158 @@ async function sendFile(filename) {
 
 
 //download button
-downloadBtn.onclick = function(){
-  // var url = canvas.toDataURL()
-  // console.log(url);
+// downloadBtn.onclick = function(){
+//   // var url = canvas.toDataURL()
+//   // console.log(url);
+//   const a = document.createElement("a");
+//   document.body.appendChild(a);
+//   a.href = canvas.toDataURL();
+//   // window.open
+//   a.download = "canvas-image.png";
+//   a.click();
+//   sendFile(a.href);
+//   document.body.removeChild(a);
+// }
+
+
+// downloadBtn.onclick = function() {
+//   let canvasFile = convertCanvasToImage();
+//   document.getElementById("uploadForm").file = canvasFile;
+//   document.getElementById("uploadForm").submit();
+// }
+
+
+// downloadBtn.onclick = function() {
+//   var dataURL = canvas.toDataURL('image/png');
+//   var blob = dataURItoBlob2(dataURL);
+//   let canvasFile = new File([blob], "canvas-file");
+//   document.getElementById("uploadForm").file = canvasFile;
+//   document.getElementById("uploadForm").submit();
+// }
+
+
+downloadBtn.onclick = function() {
+
   const a = document.createElement("a");
   document.body.appendChild(a);
   a.href = canvas.toDataURL();
-  // window.open
-  a.download = "canvas-image.png";
-  a.click();
-  sendFile(a.href);
+  var inputs = document.getElementById("uploadForm").elements;
+  inputs["file"] = a;
+  document.forms["uploadForm"].submit();
+  // a.download = "canvas-image.png"
+  a.click()
   document.body.removeChild(a);
+}
+
+
+// downloadBtn.onclick = function() {
+//   var dataURL = canvas.toDataURL('image/png');
+//   console.log(dataURL)
+
+//   // var upload = sendFile(dataURL)
+//   // console.log(upload)
+
+//   // document.getElementById("uploadForm").File = dataURL
+//   // document.getElementById("uploadForm").submit()
+
+//   // var data = new FormData()
+//   // var file = dataURLtoFile(dataURL, "canvas-download")
+//   // console.log(file.name)
+//   // data.append('file', file, file.name)
   
+
+//   var blob = dataURItoBlob2(dataURL);
+//   console.log(blob)
+//   var fd = new FormData(document.forms[0]);
+//   // var xhr = new XMLHttpRequest();
+//   // fd.append("canvasImage", blob);
+//   fd.append("file", blob, "file");
+//   console.log(fd)
+//   var newFile = new File([blob], "canvas-download");
+//   console.log(newFile)
+  
+//   // xhr.open('POST', '/', true);
+//   // xhr.send(fd)
+
+//   var upload = sendFile(newFile)
+//   console.log(upload)
+
+//   // document.getElementById("uploadForm").File = newFile;
+//   // document.getElementById("uploadForm").submit();
+// }
+
+
+function convertCanvasToImage() {
+  let image = new Image();
+  image.src = canvas.toDataURL('image/png');
+  image.id = "canvas-download"
+  return image;
+}
+
+function convertCanvasToFile(blob) {
+  let file = new File(blob, "canvas-file");
+  file.src = canvas.toDataURL();
+  file.name = "canvas-download"
+  return file;
+}
+
+
+const dataURLtoFile = (dataurl, filename) => {
+  const arr = dataurl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n) {
+    u8arr[n - 1] = bstr.charCodeAt(n - 1)
+    n -= 1 // to make eslint happy
+  }
+  return new File([u8arr], filename, { type: mime })
+}
+
+function dataURItoBlob(dataURI) {
+  // convert base64/URLEncoded data component to raw binary data held in a string
+  var byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+      byteString = atob(dataURI.split(',')[1]);
+  else
+      byteString = unescape(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to a typed array
+  var ia = new Uint8Array(byteString.length);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  return new Blob([ia], {type:mimeString});
+}
+
+function dataURItoBlob2(dataURI) {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  var byteString = atob(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  //Old Code
+  //write the ArrayBuffer to a blob, and you're done
+  //var bb = new BlobBuilder();
+  //bb.append(ab);
+  //return bb.getBlob(mimeString);
+
+  //New Code
+  return new Blob([ab], {type: mimeString});
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
