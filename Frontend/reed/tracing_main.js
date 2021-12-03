@@ -147,17 +147,25 @@ async function sendFile(filename) {
 // }
 
 
-downloadBtn.onclick = function() {
+// downloadBtn.onclick = function() {
 
-  const a = document.createElement("a");
-  document.body.appendChild(a);
-  a.href = canvas.toDataURL();
-  var inputs = document.getElementById("uploadForm").elements;
-  inputs["file"] = a;
-  document.forms["uploadForm"].submit();
-  // a.download = "canvas-image.png"
-  a.click()
-  document.body.removeChild(a);
+//   const a = document.createElement("a");
+//   document.body.appendChild(a);
+//   a.href = canvas.toDataURL();
+//   console.log(a.href);
+//   var inputs = document.getElementById("uploadForm").elements;
+//   inputs["file"] = a;
+//   document.forms["uploadForm"].submit();
+//   // a.download = "canvas-image.png"
+//   a.click()
+//   document.body.removeChild(a);
+// }
+
+
+downloadBtn.onclick = function() {
+  var dataURL = canvas.toDataURL();
+  var result = sendFile(dataURL)
+  console.log(result)
 }
 
 
