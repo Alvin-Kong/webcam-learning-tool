@@ -86,7 +86,8 @@ def home():
         query = json.loads(request.data.decode('utf-8'))
         # query = json.loads(request.data.decode('ascii'))
         # query = request.data
-        postImagePath = postTemplatePath = None
+        # print(query)
+        postImagePath = postTemplatePath = file = None
         if "postImagePath" in query:
             postImagePath = query["postImagePath"]
             # print("postImagePath: ", postImagePath)
@@ -95,8 +96,8 @@ def home():
             postTemplatePath = query["postTemplatePath"]
             # print("postTemplatePath: ", postTemplatePath)
 
-        if "file" in request.files:
-            file = request.files["file"]
+        if "file" in query:
+            file = query["file"]
             print("file: ", file)
 
         if postImagePath is not None:
@@ -108,8 +109,9 @@ def home():
             # print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
         if file is not None:
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
-            return redirect(url_for('download_file', name="canvas-image.png"))
+            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
+            # return redirect(url_for('download_file', name="canvas-image.png"))
+            print("dataURL received")
 
         return json.dumps("data posted"), {"Content-Type": "application/json"}
 
