@@ -77,11 +77,11 @@ def home():
         
         return json.dumps(response), {"Content-Type": "application/json"}
 
-    # POST method
+    # ============================================== POST method ==============================================
     if request.method == 'POST':
         # print(request)
         # print(type(request.data))
-        # print(type(request.files))
+        # print(type(request.files)) 
         # print(request.files)
         query = json.loads(request.data.decode('utf-8'))
         # query = json.loads(request.data.decode('ascii'))
@@ -95,6 +95,10 @@ def home():
             postTemplatePath = query["postTemplatePath"]
             # print("postTemplatePath: ", postTemplatePath)
 
+        if "file" in request.files:
+            file = request.files["file"]
+            print("file: ", file)
+
         if postImagePath is not None:
             filepathInput["postImagePath"] = postImagePath
             # print("postImagePath: ", filepathInput["postImagePath"])
@@ -102,6 +106,10 @@ def home():
         if postTemplatePath is not None:
             filepathInput["postTemplatePath"] = postTemplatePath
             # print("postTemplatePath: ", filepathInput["postTemplatePath"])
+
+        if file is not None:
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
+            return redirect(url_for('download_file', name="canvas-image.png"))
 
         return json.dumps("data posted"), {"Content-Type": "application/json"}
 
@@ -113,23 +121,23 @@ def home():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
+        print(request)
+        print(request.files)
         if "file" in request.files:
             file = request.files["file"]
             print("file: ", file)
             if file.filename == '':
                 print("ERROR: no selected file")
                 return redirect(request.url)
+            elif file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print(filename)
+                print(os.path.join(app.config['UPLOAD_FOLDER']))
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return redirect(url_for('download_file', name=filename))
         else:
             print("ERROR: no file in request query")
-
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            print(filename)
-            print(os.path.join(app.config['UPLOAD_FOLDER']))
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
-
-    return json.dumps("file uploaded"), {"Content-Type": "application/json"}
+            return json.dumps("no file detected"), {"Content-Type": "application/json"}
 
 
 @app.route('/upload/<name>')
