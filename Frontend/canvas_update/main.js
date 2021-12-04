@@ -6,6 +6,8 @@ let undo = document.getElementById("#undo");
 let allBtn = document.querySelectorAll(".btn");
 let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
+let cursor = document.getElementById("cursor");
+let cursorOn = false;
 
 
 // record  x and y coordinates point of brush
@@ -221,6 +223,28 @@ function undo_last(){
 }
 
 
+// set webcam canvas cursor
+function set_cursor(x, y) {
+  var left = x - 8;
+  var top = y - 8;
+
+  if (left < 3) {
+      left = 3;
+  }
+  if (left > 787) {
+      left = 787;
+  }
+  if (top < 1) {
+      top = 1;
+  }
+  if (top > 585) {
+      top = 585;
+  }
+  cursor.style.left = left + "px";
+  cursor.style.top = top + "px";
+}
+
+
 ///////////////////////////////////// webcam drawing /////////////////////////////////////
 // Function to get data from local API
 const api_url = 'http://127.0.0.1:5000/';
@@ -255,6 +279,19 @@ document.addEventListener('keypress', async event => {
 })
 
 
+document.addEventListener('keypress', async event => {
+  if (event.code === 'KeyM') {
+    cursorOn = true;
+    while(cursorOn) {
+      var data = await getapiData();
+      var x = data.data.tracking_response.tracking_results["x"];
+      var y = data.data.tracking_response.tracking_results["y"];
+      set_cursor(x, y);
+    }
+  }
+})
+
+
 // Main drawing functionality
 document.addEventListener('keypress', async (e) => {
   if ((e).code === 'Enter') {
@@ -267,6 +304,9 @@ document.addEventListener('keypress', async (e) => {
     var startY = startapiData.data.tracking_response.tracking_results["y"];
     // console.log("start: " + startX + ", " + startY);
     limiter = 0;
+    
+    // board.canDraw = startapiData.data.tracking_response.tracking_results["draw"];
+    // console.log(board.canDraw)
 
     // Main while loop to draw
     while (board.canDraw) {
@@ -275,30 +315,27 @@ document.addEventListener('keypress', async (e) => {
       var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
       var nextX = nextapiData.data.tracking_response.tracking_results["x"];
       var nextY = nextapiData.data.tracking_response.tracking_results["y"];
+      set_cursor(nextX, nextY);
       // console.log("next: " + nextX + ", " + nextY);
       
       drawLine(startX, startY, nextX, nextY)
-
-      // Press 'M' key to stop drawing and exit out of while loop
-      document.addEventListener('keypress', event => {
-        if (event.code === 'Space') {
-          board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
-          board.canDraw = false;
-
-          restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
-          limiter += 1;
-          if (limiter == 1) {
-            index += 1;
-            console.log("index" + index)
-            // console.log(restore_array);
-            console.log("Drawing Stop")
-          }
-        }
-      });
       
       startX = nextX;
       startY = nextY;
     }
+  }
+});
+
+
+// Press 'Space' key to stop drawing and exit out of while loop
+document.addEventListener('keypress', event => {
+  if (event.code === 'Space') {
+    board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
+    board.canDraw = false;
+    cursorOn = false;
+
+    restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    console.log("Drawing Stop")
   }
 });
 
@@ -316,28 +353,3 @@ function drawLine(x_start, y_start, x_end, y_end) {
   context.closePath();
 }
 ///////////////////////////////////// webcam drawing /////////////////////////////////////
-
-
-// //request and response of center point
-// function getCenter() {
-//   const express = require("express");
-//   const { spawn } = require("child_process");
-//   const app = express();
-//   const port = 5000;
-
-//   app.get("/", (req, res) => {
-//     var dataset = [];
-//     const python = spawn("python", ["../Backend/get_center.py"]);
-//     python.stdout.on("data", function (data) {
-//       console.log("Pipe data from python scrupt ...");
-//       dataset.push(data);
-//     });
-
-//     python.on("close", (code) => {
-//       console.log(`child process close all stdio with code ${code}`);
-//       res.send(dataset.join(""));
-//     });
-//   });
-
-//   app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-// }

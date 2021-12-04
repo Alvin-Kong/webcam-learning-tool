@@ -44,19 +44,22 @@ def qualityBracket(percentage):
 #  b64
 def trace(template, b64):
     try:
+        print(template)
         path = generatePath()
         pathOriginal = os.path.join(path, "Original")
         pathOriginal2 = os.path.join(pathOriginal, template)
 
-        original = cv2.imread(pathOriginal2 + ".png")
+        original = cv2.imread(template)
 
         pathTrace = os.path.join(path, "Traced")
         pathTraced = os.path.join(pathTrace, "img.png")
 
+        string_to_64 = b64.encode("ascii")
+        base = base64.decodebytes(string_to_64)
         print()
-        print(b64)
+        print(base)
         tracedImage = open(pathTraced, 'wb')
-        tracedImage.write(b64)
+        tracedImage.write(base)
         tracedImage.close()
 
         traced = cv2.imread(pathTraced, cv2.IMREAD_UNCHANGED)
@@ -87,7 +90,7 @@ def trace(template, b64):
         print(original_count)
         print(traced_count)
         print(diff_count)
-        error_val = 0
+        error_val = 10
 
         added_image = cv2.addWeighted(original, 0.4, traced, 0.1, 0)
         cv2.imshow("overlay", added_image)

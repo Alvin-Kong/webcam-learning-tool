@@ -12,6 +12,8 @@
 
   <body>
 
+    <img id = "cursor" src="cursor.png" width="16" height="16" style = "position:absolute; left: 3px; top: 1px;">
+    
     <canvas id="canvas" width="800px" height="600px"></canvas>
 
     <div class="menu">
@@ -64,17 +66,21 @@
         id="undo"
       ></div>
       <div
+        onclick="upload()"
+        class="btn upload"
+        style="background-image: url(img/checkmark.png);"
+      ></div>
+      <div
+        onclick="download()"
         class="btn download"
-        style="background-image: url(img/download.png)"
+        style="background-image: url(img/download.png);"
       ></div>
       </div>
     </div>
-
-    <form id="uploadForm" action = "http://127.0.0.1:5000/" method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Submit name=submitBtn>
-    </form>
-
+    <div>
+      <p id='rating'></p>
+      <p id='percentage'></p>
+    </div>
 
     <script src="tracing_main.js"></script>
   </body>
