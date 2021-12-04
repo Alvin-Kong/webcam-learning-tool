@@ -7,6 +7,30 @@ let allBtn = document.querySelectorAll(".btn");
 let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 let backgroundBtn = document.querySelector("#background");
+let templatePath = ''
+let cursor = document.getElementById("cursor");
+let cursorOn = false;
+
+
+function set_cursor(x, y) {
+    var left = x - 8;
+    var top = y - 8;
+
+    if (left < 3) {
+        left = 3;
+    }
+    if (left > 787) {
+        left = 787;
+    }
+    if (top < 1) {
+        top = 1;
+    }
+    if (top > 585) {
+        top = 585;
+    }
+    cursor.style.left = left + "px";
+    cursor.style.top = top + "px";
+}
 
 
 async function getTemplate(choice) {
@@ -39,10 +63,13 @@ async function change_background(choice){
   // console.log(path)
   string = path.replace('C:','')
   string = string.replaceAll('\\', '/')
+  templatePath = string
   console.log(string)
   url = "url(" + String(string) + ")"
   // console.log(url)
   canvas.style.backgroundImage = url
+  document.getElementById("rating").innerHTML = "";
+  document.getElementById("percentage").innerHTML = "";
 }
 
 
@@ -78,9 +105,7 @@ var board = {
     context.stroke()
   },
   //brush function end
-
 };
-
 
 
 //brush button
@@ -98,6 +123,7 @@ brushBtn.onclick = function () {
 upload_api_url = 'http://127.0.0.1:5000/upload'
 async function fileUpload(filename) {
   let response = await axios.post(api_url, {
+    postTemplatePath: templatePath,
     file: filename
   })
   .catch(function(error) {
@@ -115,168 +141,28 @@ async function sendFile(filename) {
 }
 
 
-//download button
-// downloadBtn.onclick = function(){
-//   // var url = canvas.toDataURL()
-//   // console.log(url);
-//   const a = document.createElement("a");
-//   document.body.appendChild(a);
-//   a.href = canvas.toDataURL();
-//   // window.open
-//   a.download = "canvas-image.png";
-//   a.click();
-//   sendFile(a.href);
-//   document.body.removeChild(a);
-// }
+// download button
+function download() {
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.href = canvas.toDataURL();
+  // window.open
+  a.download = "canvas-image.png";
+  a.click();
+  document.body.removeChild(a);
+}
 
 
-// downloadBtn.onclick = function() {
-//   let canvasFile = convertCanvasToImage();
-//   document.getElementById("uploadForm").file = canvasFile;
-//   document.getElementById("uploadForm").submit();
-// }
-
-
-// downloadBtn.onclick = function() {
-//   var dataURL = canvas.toDataURL('image/png');
-//   var blob = dataURItoBlob2(dataURL);
-//   let canvasFile = new File([blob], "canvas-file");
-//   document.getElementById("uploadForm").file = canvasFile;
-//   document.getElementById("uploadForm").submit();
-// }
-
-
-// downloadBtn.onclick = function() {
-
-//   const a = document.createElement("a");
-//   document.body.appendChild(a);
-//   a.href = canvas.toDataURL();
-//   console.log(a.href);
-//   var inputs = document.getElementById("uploadForm").elements;
-//   inputs["file"] = a;
-//   document.forms["uploadForm"].submit();
-//   // a.download = "canvas-image.png"
-//   a.click()
-//   document.body.removeChild(a);
-// }
-
-
-downloadBtn.onclick = function() {
+async function upload() {
   var dataURL = canvas.toDataURL();
-  var result = sendFile(dataURL)
-  console.log(result)
+  var result = await sendFile(dataURL);
+  var rating = result.data.rating;
+  var percentage = result.data.percentage;
+  document.getElementById("rating").innerHTML = "Rating(0 = non-passable, 1 = average, 2 = good): " + rating;
+  document.getElementById("percentage").innerHTML = "Percentage: " + percentage + "%";
+  console.log(result);
 }
 
-
-// downloadBtn.onclick = function() {
-//   var dataURL = canvas.toDataURL('image/png');
-//   console.log(dataURL)
-
-//   // var upload = sendFile(dataURL)
-//   // console.log(upload)
-
-//   // document.getElementById("uploadForm").File = dataURL
-//   // document.getElementById("uploadForm").submit()
-
-//   // var data = new FormData()
-//   // var file = dataURLtoFile(dataURL, "canvas-download")
-//   // console.log(file.name)
-//   // data.append('file', file, file.name)
-  
-
-//   var blob = dataURItoBlob2(dataURL);
-//   console.log(blob)
-//   var fd = new FormData(document.forms[0]);
-//   // var xhr = new XMLHttpRequest();
-//   // fd.append("canvasImage", blob);
-//   fd.append("file", blob, "file");
-//   console.log(fd)
-//   var newFile = new File([blob], "canvas-download");
-//   console.log(newFile)
-  
-//   // xhr.open('POST', '/', true);
-//   // xhr.send(fd)
-
-//   var upload = sendFile(newFile)
-//   console.log(upload)
-
-//   // document.getElementById("uploadForm").File = newFile;
-//   // document.getElementById("uploadForm").submit();
-// }
-
-
-function convertCanvasToImage() {
-  let image = new Image();
-  image.src = canvas.toDataURL('image/png');
-  image.id = "canvas-download"
-  return image;
-}
-
-function convertCanvasToFile(blob) {
-  let file = new File(blob, "canvas-file");
-  file.src = canvas.toDataURL();
-  file.name = "canvas-download"
-  return file;
-}
-
-
-const dataURLtoFile = (dataurl, filename) => {
-  const arr = dataurl.split(',')
-  const mime = arr[0].match(/:(.*?);/)[1]
-  const bstr = atob(arr[1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n)
-  while (n) {
-    u8arr[n - 1] = bstr.charCodeAt(n - 1)
-    n -= 1 // to make eslint happy
-  }
-  return new File([u8arr], filename, { type: mime })
-}
-
-function dataURItoBlob(dataURI) {
-  // convert base64/URLEncoded data component to raw binary data held in a string
-  var byteString;
-  if (dataURI.split(',')[0].indexOf('base64') >= 0)
-      byteString = atob(dataURI.split(',')[1]);
-  else
-      byteString = unescape(dataURI.split(',')[1]);
-
-  // separate out the mime component
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-  // write the bytes of the string to a typed array
-  var ia = new Uint8Array(byteString.length);
-  for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-  }
-
-  return new Blob([ia], {type:mimeString});
-}
-
-function dataURItoBlob2(dataURI) {
-  // convert base64 to raw binary data held in a string
-  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
-  var byteString = atob(dataURI.split(',')[1]);
-
-  // separate out the mime component
-  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-  // write the bytes of the string to an ArrayBuffer
-  var ab = new ArrayBuffer(byteString.length);
-  var ia = new Uint8Array(ab);
-  for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-  }
-
-  //Old Code
-  //write the ArrayBuffer to a blob, and you're done
-  //var bb = new BlobBuilder();
-  //bb.append(ab);
-  //return bb.getBlob(mimeString);
-
-  //New Code
-  return new Blob([ab], {type: mimeString});
-}
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
 // Add the event listeners for mousedown, mousemove, and mouseup
@@ -322,6 +208,8 @@ function clear_canvas() {
   context.clearRect(0, 0, canvas.width, canvas.height);
   restore_array = [];
   index = -1;
+  document.getElementById("rating").innerHTML = "";
+  document.getElementById("percentage").innerHTML = "";
 }
 
 //undo drawings function
@@ -333,6 +221,8 @@ function undo_last(){
     restore_array.pop();
     context.putImageData(restore_array[index],0,0);
   }
+  document.getElementById("rating").innerHTML = "";
+  document.getElementById("percentage").innerHTML = "";
 }
 
 
@@ -372,6 +262,19 @@ document.addEventListener('keypress', async event => {
 })
 
 
+document.addEventListener('keypress', async event => {
+  if (event.code === 'KeyM') {
+    cursorOn = true;
+    while(cursorOn) {
+      var data = await getapiData();
+      var x = data.data.tracking_response.tracking_results["x"];
+      var y = data.data.tracking_response.tracking_results["y"];
+      set_cursor(x, y);
+    }
+  }
+})
+
+
 // Main drawing functionality
 document.addEventListener('keypress', async (e) => {
   if ((e).code === 'Enter') {
@@ -384,6 +287,7 @@ document.addEventListener('keypress', async (e) => {
     var startY = startapiData.data.tracking_response.tracking_results["y"];
     // console.log("start: " + startX + ", " + startY);
     limiter = 0;
+    cursorOn = false;
 
     // Main while loop to draw
     while (board.canDraw) {
@@ -393,29 +297,26 @@ document.addEventListener('keypress', async (e) => {
       var nextX = nextapiData.data.tracking_response.tracking_results["x"];
       var nextY = nextapiData.data.tracking_response.tracking_results["y"];
       // console.log("next: " + nextX + ", " + nextY);
+      set_cursor(nextX, nextY);
       
       drawLine(startX, startY, nextX, nextY)
 
-      // Press 'M' key to stop drawing and exit out of while loop
-      document.addEventListener('keypress', event => {
-        if (event.code === 'Space') {
-          board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
-          board.canDraw = false;
-
-          restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
-          limiter += 1;
-          if (limiter == 1) {
-            index += 1;
-            console.log("index" + index)
-            // console.log(restore_array);
-            console.log("Drawing Stop")
-          }
-        }
-      });
-      
       startX = nextX;
       startY = nextY;
     }
+  }
+});
+
+
+// Press 'Space' key to stop drawing and exit out of while loop
+document.addEventListener('keypress', event => {
+  if (event.code === 'Space') {
+    board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
+    board.canDraw = false;
+    cursorOn = false;
+
+    restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    console.log("Drawing Stop")
   }
 });
 
@@ -433,28 +334,3 @@ function drawLine(x_start, y_start, x_end, y_end) {
   context.closePath();
 }
 ///////////////////////////////////// webcam drawing /////////////////////////////////////
-
-
-// //request and response of center point
-// function getCenter() {
-//   const express = require("express");
-//   const { spawn } = require("child_process");
-//   const app = express();
-//   const port = 5000;
-
-//   app.get("/", (req, res) => {
-//     var dataset = [];
-//     const python = spawn("python", ["../Backend/get_center.py"]);
-//     python.stdout.on("data", function (data) {
-//       console.log("Pipe data from python scrupt ...");
-//       dataset.push(data);
-//     });
-
-//     python.on("close", (code) => {
-//       console.log(`child process close all stdio with code ${code}`);
-//       res.send(dataset.join(""));
-//     });
-//   });
-
-//   app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-// }
