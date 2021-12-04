@@ -21,6 +21,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 cors = CORS(app)
 
 objectTracker = object()
+apiThread = None
+trackerThread = None
 
 getTraceData = None
 isOff = False
@@ -88,8 +90,8 @@ def home():
         # query = request.data
         # print(query)
         postImagePath = postTemplatePath = file = None
-        if "postImagePath" in query:
-            postImagePath = query["postImagePath"]
+        # if "postImagePath" in query:
+        #     postImagePath = query["postImagePath"]
             # print("postImagePath: ", postImagePath)
 
         if "postTemplatePath" in query:
@@ -98,10 +100,12 @@ def home():
 
         if "file" in query:
             file = query["file"]
-            print("file: ", file)
+            file = file.split(',')[1]
+            # print("file: ", file)
+            # print("file type: ", type(file))
 
-        if postImagePath is not None:
-            filepathInput["postImagePath"] = postImagePath
+        # if postImagePath is not None:
+        #     filepathInput["postImagePath"] = postImagePath
             # print("postImagePath: ", filepathInput["postImagePath"])
 
         if postTemplatePath is not None:
@@ -109,42 +113,13 @@ def home():
             # print("postTemplatePath: ", filepathInput["postTemplatePath"])
 
         if file is not None:
-            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
-            # return redirect(url_for('download_file', name="canvas-image.png"))
-            print("dataURL received")
+            return asyncio.run(get_tracing_stats(file))
 
         return json.dumps("data posted"), {"Content-Type": "application/json"}
 
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
             "Content-Type": "application/json"}
-
-
-@app.route('/upload', methods=['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        print(request)
-        print(request.files)
-        if "file" in request.files:
-            file = request.files["file"]
-            print("file: ", file)
-            if file.filename == '':
-                print("ERROR: no selected file")
-                return redirect(request.url)
-            elif file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                print(filename)
-                print(os.path.join(app.config['UPLOAD_FOLDER']))
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                return redirect(url_for('download_file', name=filename))
-        else:
-            print("ERROR: no file in request query")
-            return json.dumps("no file detected"), {"Content-Type": "application/json"}
-
-
-@app.route('/upload/<name>')
-def download_file(name):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
 
 # Test if any argument is equal to None
@@ -177,11 +152,10 @@ async def build_tracking_response():
 
 
 # Function to build a json response containing the returned data from tracing.py's trace method
-async def get_tracing_stats():
+async def get_tracing_stats(f):
     response = {}
-    # print("postTemplatePath: ", filepathInput["postTemplatePath"])
-    # print("postImagePath: ", filepathInput["postImagePath"])
-    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"])
+    print("postTemplatePath: ", filepathInput["postTemplatePath"])
+    response["rating"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], f)
     return response
 
 
@@ -199,6 +173,7 @@ async def get_position():
     response["center"] = objectTracker.getCenter()
     response["x"] = objectTracker.getXCenter()
     response["y"] = objectTracker.getYCenter()
+    response["draw"] = objectTracker._draw
     # print(response)
     return response
 
