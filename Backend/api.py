@@ -112,6 +112,9 @@ def home():
             # file.save(os.path.join(app.config['UPLOAD_FOLDER'], "canvas-image.png"))
             # return redirect(url_for('download_file', name="canvas-image.png"))
             print("dataURL received")
+            return asyncio.run(get_tracing_stats(file))
+
+
 
         return json.dumps("data posted"), {"Content-Type": "application/json"}
 
@@ -177,11 +180,11 @@ async def build_tracking_response():
 
 
 # Function to build a json response containing the returned data from tracing.py's trace method
-async def get_tracing_stats():
+async def get_tracing_stats(f):
     response = {}
-    # print("postTemplatePath: ", filepathInput["postTemplatePath"])
-    # print("postImagePath: ", filepathInput["postImagePath"])
-    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"])
+    print("postTemplatePath: ", filepathInput["postTemplatePath"])
+    print("postImagePath: ", filepathInput["postImagePath"])
+    response["ranking"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], filepathInput["postImagePath"], f)
     return response
 
 

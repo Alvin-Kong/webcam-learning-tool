@@ -8,7 +8,6 @@ let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 let backgroundBtn = document.querySelector("#background");
 
-background = ""
 
 async function getTemplate(choice) {
   console.log(choice)
