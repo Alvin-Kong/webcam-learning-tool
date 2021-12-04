@@ -102,22 +102,22 @@ def trace(originalImage, tracedImage):
 # Method to return a random png from different categories
 def getOriginal(choice):
     path = os.path.join(generatePath(), "Original")
-    if choice == 0:
+    if choice == "0":
         file = getAny(path)
         return os.path.join(path, file)
-    elif choice == 1:
+    elif choice == "1":
         file = getLetter(path)
         return os.path.join(path, file)
-    elif choice == 2:
+    elif choice == "2":
         file = getNumber(path)
         return os.path.join(path, file)
-    elif choice == 3:
+    elif choice == "3":
         file = getUpperCase(path)
         return os.path.join(path, file)
-    elif choice == 4:
+    elif choice == "4":
         file = getLowerCase(path)
         return os.path.join(path, file)
-    elif choice == 5:
+    elif choice == "5":
         file = getShape(path)
         return os.path.join(path, file)
     else:
@@ -196,10 +196,9 @@ def generatePath():
 if __name__ == '__main__':
     # zero = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/0.png")
     # cv2.imshow("0", zero)
-    #print(trace("triangle", "canvas-image"))
-    for i in range(100):
-        print(getOriginal(4))
-
+    # print(trace("triangle", "canvas-image"))
+    for i in range(10):
+        print(getOriginal(3))
     #path = getOriginal(1)
     #print(path)
     #imageTest = cv2.imread(path)

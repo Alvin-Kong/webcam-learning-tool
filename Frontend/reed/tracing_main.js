@@ -10,7 +10,8 @@ let backgroundBtn = document.querySelector("#background");
 
 background = ""
 
-async function getData(choice) {
+async function getTemplate(choice) {
+  console.log(choice)
   let response = await axios.get(api_url, {
     params: {
       getTemplatePath: choice
@@ -26,69 +27,25 @@ async function getData(choice) {
 
 async function getChoice(choice)
 {
-   var received_data = await getData(choice)
+  console.log(choice)
+   var received_data = await getTemplate(choice)
    var path = received_data.data.template_response.template_results["template"]
    return path
 }
 
 async function change_background(choice){
-    clear_canvas()
-    var path = await getChoice(choice)
-    console.log(path)
-    url = "url(" + str(path) + ")"
-    canvas.style.backgroundImage = url
-    /*
-    if (choice == 0)
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/0.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/u_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 1)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/1.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/r_uc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 2)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/2.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/4.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 3)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/3.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/l_uc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 4)
-    {
-       // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/4.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/b_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else if (choice == 5)
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/5.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/square.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    else
-    {
-        // string = "/Users/reedbower/PycharmProjects/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
-        string = "/Users/alvin/webcam-learning-tool/Backend/Tracing/Original/a_lc.png"
-        url = "url("+ string + ")"
-        canvas.style.backgroundImage = url
-    }
-    */
+  console.log("choice: ", choice)
+  clear_canvas()
+  var path = await getChoice(choice)
+  // console.log(path)
+  string = path.replace('C:','')
+  string = string.replaceAll('\\', '/')
+  console.log(string)
+  url = "url(" + String(string) + ")"
+  // console.log(url)
+  canvas.style.backgroundImage = url
 }
+
 
 // record  x and y coordinates point of brush
 var x = 0;
@@ -139,18 +96,7 @@ brushBtn.onclick = function () {
 };
 
 
-async function sendData(postImgPath, postTempPath, postTempType) {
-  let response = await axios.post(api_url, {
-    postImagePath: postImgPath,
-    postTemplatePath: postTempPath,
-    postTemplateType: postTempType
-  })
-  .catch(function(error) {
-      console.log(error);
-      alert(error);
-  });
-}
-
+upload_api_url = 'http://127.0.0.1:5000/upload'
 async function fileUpload(filename) {
   let response = await axios.post(api_url, {
     file: filename
@@ -159,26 +105,178 @@ async function fileUpload(filename) {
     console.log(error);
     alert(error);
   });
+
+  return response
 }
 
 
 async function sendFile(filename) {
-  await fileUpload(filename)
+  let response = await fileUpload(filename)
+  return response
 }
 
 
 //download button
-downloadBtn.onclick = function(){
-  // var url = canvas.toDataURL()
-  // console.log(url);
-  const a = document.createElement("a");
-  document.body.appendChild(a);
-  a.href = canvas.toDataURL();
-  // window.open
-  // a.download = "canvas-image.png";
-  sendFile(a.href);
-  // a.click();
-  document.body.removeChild(a);
+// downloadBtn.onclick = function(){
+//   // var url = canvas.toDataURL()
+//   // console.log(url);
+//   const a = document.createElement("a");
+//   document.body.appendChild(a);
+//   a.href = canvas.toDataURL();
+//   // window.open
+//   a.download = "canvas-image.png";
+//   a.click();
+//   sendFile(a.href);
+//   document.body.removeChild(a);
+// }
+
+
+// downloadBtn.onclick = function() {
+//   let canvasFile = convertCanvasToImage();
+//   document.getElementById("uploadForm").file = canvasFile;
+//   document.getElementById("uploadForm").submit();
+// }
+
+
+// downloadBtn.onclick = function() {
+//   var dataURL = canvas.toDataURL('image/png');
+//   var blob = dataURItoBlob2(dataURL);
+//   let canvasFile = new File([blob], "canvas-file");
+//   document.getElementById("uploadForm").file = canvasFile;
+//   document.getElementById("uploadForm").submit();
+// }
+
+
+// downloadBtn.onclick = function() {
+
+//   const a = document.createElement("a");
+//   document.body.appendChild(a);
+//   a.href = canvas.toDataURL();
+//   console.log(a.href);
+//   var inputs = document.getElementById("uploadForm").elements;
+//   inputs["file"] = a;
+//   document.forms["uploadForm"].submit();
+//   // a.download = "canvas-image.png"
+//   a.click()
+//   document.body.removeChild(a);
+// }
+
+
+downloadBtn.onclick = function() {
+  var dataURL = canvas.toDataURL();
+  var result = sendFile(dataURL)
+  console.log(result)
+}
+
+
+// downloadBtn.onclick = function() {
+//   var dataURL = canvas.toDataURL('image/png');
+//   console.log(dataURL)
+
+//   // var upload = sendFile(dataURL)
+//   // console.log(upload)
+
+//   // document.getElementById("uploadForm").File = dataURL
+//   // document.getElementById("uploadForm").submit()
+
+//   // var data = new FormData()
+//   // var file = dataURLtoFile(dataURL, "canvas-download")
+//   // console.log(file.name)
+//   // data.append('file', file, file.name)
+  
+
+//   var blob = dataURItoBlob2(dataURL);
+//   console.log(blob)
+//   var fd = new FormData(document.forms[0]);
+//   // var xhr = new XMLHttpRequest();
+//   // fd.append("canvasImage", blob);
+//   fd.append("file", blob, "file");
+//   console.log(fd)
+//   var newFile = new File([blob], "canvas-download");
+//   console.log(newFile)
+  
+//   // xhr.open('POST', '/', true);
+//   // xhr.send(fd)
+
+//   var upload = sendFile(newFile)
+//   console.log(upload)
+
+//   // document.getElementById("uploadForm").File = newFile;
+//   // document.getElementById("uploadForm").submit();
+// }
+
+
+function convertCanvasToImage() {
+  let image = new Image();
+  image.src = canvas.toDataURL('image/png');
+  image.id = "canvas-download"
+  return image;
+}
+
+function convertCanvasToFile(blob) {
+  let file = new File(blob, "canvas-file");
+  file.src = canvas.toDataURL();
+  file.name = "canvas-download"
+  return file;
+}
+
+
+const dataURLtoFile = (dataurl, filename) => {
+  const arr = dataurl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
+  while (n) {
+    u8arr[n - 1] = bstr.charCodeAt(n - 1)
+    n -= 1 // to make eslint happy
+  }
+  return new File([u8arr], filename, { type: mime })
+}
+
+function dataURItoBlob(dataURI) {
+  // convert base64/URLEncoded data component to raw binary data held in a string
+  var byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+      byteString = atob(dataURI.split(',')[1]);
+  else
+      byteString = unescape(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to a typed array
+  var ia = new Uint8Array(byteString.length);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  return new Blob([ia], {type:mimeString});
+}
+
+function dataURItoBlob2(dataURI) {
+  // convert base64 to raw binary data held in a string
+  // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+  var byteString = atob(dataURI.split(',')[1]);
+
+  // separate out the mime component
+  var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+  // write the bytes of the string to an ArrayBuffer
+  var ab = new ArrayBuffer(byteString.length);
+  var ia = new Uint8Array(ab);
+  for (var i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+  }
+
+  //Old Code
+  //write the ArrayBuffer to a blob, and you're done
+  //var bb = new BlobBuilder();
+  //bb.append(ab);
+  //return bb.getBlob(mimeString);
+
+  //New Code
+  return new Blob([ab], {type: mimeString});
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
