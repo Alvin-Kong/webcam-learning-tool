@@ -1,7 +1,6 @@
 import flask
-from flask import Flask, request, redirect, url_for, redirect, url_for, send_from_directory
+from flask import Flask, request
 from flask_cors import CORS
-from werkzeug.utils import secure_filename
 
 import cv2
 import asyncio
@@ -13,113 +12,66 @@ import requests
 
 import tracing
 
-UPLOAD_FOLDER = '/Users/alvin/webcam-learning-tool/Backend/Tracing'
-ALLOWED_EXTENSIONS = {'png', 'jpeg'}
-
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app = Flask(__name__) 
 cors = CORS(app)
 
 objectTracker = object()
-apiThread = None
-trackerThread = None
-
 getTraceData = None
 isOff = False
-filepathInput = {}
-templateType = None
-file = None
+tempPath = {}
 
 
-# Makes sure only the allowed file types are allowed to be posted to the API
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
+# ====================================================================================================================
+# ======================================================= API ========================================================
 # Main function to respond to requests
 @app.route("/", methods=['GET', 'POST'])
 def home():
-    print(request.method)
     # GET method
     if request.method == 'GET':
         query = request.args
         getTraceData = getTemplatePath = isOff = None
         if "getTraceData" in query:
             getTraceData = query["getTraceData"]
-            # print("getTraceData: ", getTraceData)
 
         if "getTemplatePath" in query:
             getTemplatePath = query["getTemplatePath"]
-            # print(type(getTemplatePath))
-            # print("getTemplatePath: ", getTemplatePath)
 
         if "isOff" in query:
             isOff = query["isOff"]
-            # print("isOff: ", isOff)
 
         response = {}
 
         if getTraceData == "true":
-            if filepathInput is None:
-                return json.dumps(generateError("original template and/or saved canvas could not be found")), 400, {
-                "Content-Type": "application/json"}
-            else:
-                response["tracing_response"] = asyncio.run(build_tracing_response())
-                # print("tracing_response: ", response["tracing_response"])
+            response["tracing_response"] = asyncio.run(build_tracing_response())
 
         if getTemplatePath is not None:
             response["template_response"] = asyncio.run(build_template_response(getTemplatePath))
-            # print("template_response: ", response["template_response"])
-
 
         if isOff == "false" or None:
             response["tracking_response"] = asyncio.run(build_tracking_response())
-            # print("tracking_response: ", response["tracking_response"])
         
         return json.dumps(response), {"Content-Type": "application/json"}
 
-    # ============================================== POST method ==============================================
     if request.method == 'POST':
-        # print(request)
-        # print(type(request.data))
-        # print(type(request.files)) 
-        # print(request.files)
         query = json.loads(request.data.decode('utf-8'))
-        # query = json.loads(request.data.decode('ascii'))
-        # query = request.data
-        # print(query)
-        postImagePath = postTemplatePath = file = None
-        # if "postImagePath" in query:
-        #     postImagePath = query["postImagePath"]
-            # print("postImagePath: ", postImagePath)
+        postTemplatePath = file = None
+        response = {}
 
         if "postTemplatePath" in query:
             postTemplatePath = query["postTemplatePath"]
-            # print("postTemplatePath: ", postTemplatePath)
+            tempPath["postTemplatePath"] = postTemplatePath
 
         if "file" in query:
             file = query["file"]
             file = file.split(',')[1]
-            # print("file: ", file)
-            # print("file type: ", type(file))
+            response["tracing_stats_response"] = asyncio.run(get_tracing_stats(file))
 
-        # if postImagePath is not None:
-        #     filepathInput["postImagePath"] = postImagePath
-            # print("postImagePath: ", filepathInput["postImagePath"])
-
-        if postTemplatePath is not None:
-            filepathInput["postTemplatePath"] = postTemplatePath
-            # print("postTemplatePath: ", filepathInput["postTemplatePath"])
-
-        if file is not None:
-            return asyncio.run(get_tracing_stats(file))
-
-        return json.dumps("data posted"), {"Content-Type": "application/json"}
+        return json.dumps(response), {"Content-Type": "application/json"}
 
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
             "Content-Type": "application/json"}
+# ====================================================================================================================
 
 
 # Test if any argument is equal to None
@@ -130,6 +82,19 @@ def is_any_none(*argv):
     return False
 
 
+# Generate an JSON error response
+def generateError(reason):
+    return {
+        "reasons": [
+            {
+                "language": "en",
+                "message": reason
+            }
+        ]
+    }
+
+
+# ============================================== build response methods ==============================================
 # Build a tracing response to send to the client
 async def build_tracing_response():
     response = {}
@@ -149,13 +114,14 @@ async def build_tracking_response():
     response = {}
     response["tracking_results"] = await get_position()
     return response
+# ====================================================================================================================
 
 
+# ==================================================== get methods ====================================================
 # Function to build a json response containing the returned data from tracing.py's trace method
 async def get_tracing_stats(f):
     response = {}
-    print("postTemplatePath: ", filepathInput["postTemplatePath"])
-    response["rating"], response["percentage"] = tracing.trace(filepathInput["postTemplatePath"], f)
+    response["rating"], response["percentage"] = tracing.trace(tempPath["postTemplatePath"], f)
     return response
 
 
@@ -163,7 +129,6 @@ async def get_tracing_stats(f):
 async def get_template(choice):
     response = {}
     response["template"] = tracing.getOriginal(choice)
-    print("response_template: ", response["template"])
     return response
 
 
@@ -174,21 +139,13 @@ async def get_position():
     response["x"] = objectTracker.getXCenter()
     response["y"] = objectTracker.getYCenter()
     response["draw"] = objectTracker._draw
-    # print(response)
     return response
+# =====================================================================================================================
+# =====================================================================================================================
 
 
-# Generate an JSON error response
-def generateError(reason):
-    return {
-        "reasons": [
-            {
-                "language": "en",
-                "message": reason
-            }
-        ]
-    }
-
+# =====================================================================================================================
+# ================================================= Object Tracker ====================================================
 
 # Class for the object tracker
 class ObjectTracker():
@@ -265,22 +222,18 @@ class ObjectTracker():
 
             # Draw lines according to the position of the center of the boundary box and display the center of the boundary box
             if self._draw == True:
-                # xcenter, ycenter = util.getCenter(bbox)
                 xcenter = self.getXCenter()
                 ycenter = self.getYCenter()
-                # print(xcenter, ",", ycenter)
                 cv2.putText(self._frame, "Center: " + str(int(xcenter)) + ", " + str(int(ycenter)), (0, 125), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
                 cv2.putText(self._frame, "Drawing", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
                 
             else:
                 cv2.putText(self._frame, "Stopped", (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
 
-            # Change video capture input to grayscale
-            #gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            
-            # Display video capture
-            #cv2.imshow('object-tracker', gray)
+
+            # Display the webcam input with tracker on
             cv2.imshow('object-tracker', self._frame)
+
 
             # Toggle drawing (activation of drawing pen)
             if cv2.waitKey(1) & 0xFF == ord(' '):
@@ -289,6 +242,7 @@ class ObjectTracker():
                 else:
                     self._draw = True
 
+
             # Recalibrate tracker when object is lost
             if cv2.waitKey(1) & 0xFF == ord('r'):
                 self._capture.release()
@@ -296,6 +250,7 @@ class ObjectTracker():
                 capture, ret, frame, bbox, tracker, draw = initializeTracker()
                 newTracker = ObjectTracker(capture, ret, frame, bbox, tracker, draw)
                 newTracker.runTracker
+
 
             # Press 'esc' key to exit
             if cv2.waitKey(1) & 0xFF == 27:
@@ -325,6 +280,8 @@ class ObjectTracker():
 
     def points(self):
         return self._points
+# =====================================================================================================================
+# =====================================================================================================================
 
 
 def initializeTracker():
