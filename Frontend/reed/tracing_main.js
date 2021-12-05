@@ -11,68 +11,6 @@ let templatePath = ''
 let cursor = document.getElementById("cursor");
 let cursorOn = false;
 
-
-function set_cursor(x, y) {
-    var left = x - 8;
-    var top = y - 8;
-
-    if (left < 3) {
-        left = 3;
-    }
-    if (left > 787) {
-        left = 787;
-    }
-    if (top < 1) {
-        top = 1;
-    }
-    if (top > 585) {
-        top = 585;
-    }
-    cursor.style.left = left + "px";
-    cursor.style.top = top + "px";
-}
-
-
-async function getTemplate(choice) {
-  console.log(choice)
-  let response = await axios.get(api_url, {
-    params: {
-      getTemplatePath: choice
-    }
-  })
-  .catch(function(error) {
-    console.log(error);
-    alert(error);
-  });
-  // console.log(response)
-  return response;
-}
-
-async function getChoice(choice)
-{
-  console.log(choice)
-   var received_data = await getTemplate(choice)
-   var path = received_data.data.template_response.template_results["template"]
-   return path
-}
-
-async function change_background(choice){
-  console.log("choice: ", choice)
-  clear_canvas()
-  var path = await getChoice(choice)
-  // console.log(path)
-  string = path.replace('C:','')
-  string = string.replaceAll('\\', '/')
-  templatePath = string
-  console.log(string)
-  url = "url(" + String(string) + ")"
-  // console.log(url)
-  canvas.style.backgroundImage = url
-  document.getElementById("rating").innerHTML = "";
-  document.getElementById("percentage").innerHTML = "";
-}
-
-
 // record  x and y coordinates point of brush
 var x = 0;
 var y = 0;
@@ -80,7 +18,6 @@ var y = 0;
 //define array to store record of drawing
 let restore_array = [];
 let index = -1;
-let limiter = 0;
 
 //drawing board function
 var board = {
@@ -108,6 +45,73 @@ var board = {
 };
 
 
+// Function to set the position of the webcam cursor
+function set_cursor(x, y) {
+    var left = x - 8;
+    var top = y - 8;
+
+    if (left < 3) {
+        left = 3;
+    }
+    if (left > 787) {
+        left = 787;
+    }
+    if (top < 1) {
+        top = 1;
+    }
+    if (top > 585) {
+        top = 585;
+    }
+    cursor.style.left = left + "px";
+    cursor.style.top = top + "px";
+}
+
+
+// Function to request template filepath from API
+async function getTemplate(choice) {
+  console.log(choice)
+  let response = await axios.get(api_url, {
+    params: {
+      getTemplatePath: choice
+    }
+  })
+  .catch(function(error) {
+    console.log(error);
+    alert(error);
+  });
+  // console.log(response)
+  return response;
+}
+
+
+// Get method to get template filepath
+async function getChoice(choice)
+{
+  console.log(choice)
+   var received_data = await getTemplate(choice)
+   var path = received_data.data.template_response.template_results["template"]
+   return path
+}
+
+
+// Function to change the template shown on the canvas
+async function change_background(choice){
+  console.log("choice: ", choice)
+  clear_canvas()
+  var path = await getChoice(choice)
+  // console.log(path)
+  string = path.replace('C:','')
+  string = string.replaceAll('\\', '/')
+  templatePath = string
+  console.log(string)
+  url = "url(" + String(string) + ")"
+  // console.log(url)
+  canvas.style.backgroundImage = url
+  document.getElementById("rating").innerHTML = "";
+  document.getElementById("percentage").innerHTML = "";
+}
+
+
 //brush button
 var brushBtn = document.querySelector("#brush");
 brushBtn.onclick = function () {
@@ -120,7 +124,7 @@ brushBtn.onclick = function () {
 };
 
 
-upload_api_url = 'http://127.0.0.1:5000/upload'
+// Function to send file to backend for processing
 async function fileUpload(filename) {
   let response = await axios.post(api_url, {
     postTemplatePath: templatePath,
@@ -130,11 +134,11 @@ async function fileUpload(filename) {
     console.log(error);
     alert(error);
   });
-
   return response
 }
 
 
+// Function to request 
 async function sendFile(filename) {
   let response = await fileUpload(filename)
   return response
@@ -153,11 +157,12 @@ function download() {
 }
 
 
+// Function to initiate file upload to backend when button is clicked
 async function upload() {
   var dataURL = canvas.toDataURL();
   var result = await sendFile(dataURL);
-  var rating = result.data.rating;
-  var percentage = result.data.percentage;
+  var rating = result.data.tracing_stats_response.rating;
+  var percentage = result.data.tracing_stats_response.percentage;
   document.getElementById("rating").innerHTML = "Rating(0 = non-passable, 1 = average, 2 = good): " + rating;
   document.getElementById("percentage").innerHTML = "Percentage: " + percentage + "%";
   console.log(result);
@@ -168,8 +173,6 @@ async function upload() {
 // Add the event listeners for mousedown, mousemove, and mouseup
 canvas.addEventListener("mousedown", function (e) {
   board.canDraw = true;
-  // x = e.offsetX;
-  // y = e.offsetY;
 
   if(board.type == "brush"){
     x = e.pageX - canvas.offsetLeft;
@@ -203,6 +206,7 @@ canvas.addEventListener("mouseup", function (e) {
   } 
 });
 
+
 //clear canvas function
 function clear_canvas() {
   context.clearRect(0, 0, canvas.width, canvas.height);
@@ -211,6 +215,7 @@ function clear_canvas() {
   document.getElementById("rating").innerHTML = "";
   document.getElementById("percentage").innerHTML = "";
 }
+
 
 //undo drawings function
 function undo_last(){
@@ -226,8 +231,7 @@ function undo_last(){
 }
 
 
-///////////////////////////////////// webcam drawing /////////////////////////////////////
-// Function to get data from local API
+// Function to get webcam tracking data from local API
 const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
     let response = await axios.get(api_url, {
@@ -262,6 +266,7 @@ document.addEventListener('keypress', async event => {
 })
 
 
+// Function to initialize the webcam cursor
 document.addEventListener('keypress', async event => {
   if (event.code === 'KeyM') {
     cursorOn = true;
@@ -275,32 +280,25 @@ document.addEventListener('keypress', async event => {
 })
 
 
-// Main drawing functionality
+// Main webcam drawing functionality
 document.addEventListener('keypress', async (e) => {
   if ((e).code === 'Enter') {
     board.canDraw = true;
     console.log("Drawing Start")
     var startapiData = await getapiData();
-    // console.log(startapiData);
     var startCenter = startapiData.data.tracking_response.tracking_results["center"];
     var startX = startapiData.data.tracking_response.tracking_results["x"];
     var startY = startapiData.data.tracking_response.tracking_results["y"];
-    // console.log("start: " + startX + ", " + startY);
-    limiter = 0;
     cursorOn = false;
 
     // Main while loop to draw
     while (board.canDraw) {
       var nextapiData = await getapiData();
-      // console.log(nextapiData);
       var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
       var nextX = nextapiData.data.tracking_response.tracking_results["x"];
       var nextY = nextapiData.data.tracking_response.tracking_results["y"];
-      // console.log("next: " + nextX + ", " + nextY);
       set_cursor(nextX, nextY);
-      
       drawLine(startX, startY, nextX, nextY)
-
       startX = nextX;
       startY = nextY;
     }
@@ -308,7 +306,7 @@ document.addEventListener('keypress', async (e) => {
 });
 
 
-// Press 'Space' key to stop drawing and exit out of while loop
+// Press 'Space' key to stop drawing
 document.addEventListener('keypress', event => {
   if (event.code === 'Space') {
     board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
@@ -333,4 +331,3 @@ function drawLine(x_start, y_start, x_end, y_end) {
   context.stroke();
   context.closePath();
 }
-///////////////////////////////////// webcam drawing /////////////////////////////////////

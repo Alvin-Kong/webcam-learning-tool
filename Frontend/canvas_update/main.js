@@ -245,7 +245,6 @@ function set_cursor(x, y) {
 }
 
 
-///////////////////////////////////// webcam drawing /////////////////////////////////////
 // Function to get data from local API
 const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
@@ -298,28 +297,18 @@ document.addEventListener('keypress', async (e) => {
     board.canDraw = true;
     console.log("Drawing Start")
     var startapiData = await getapiData();
-    // console.log(startapiData);
     var startCenter = startapiData.data.tracking_response.tracking_results["center"];
     var startX = startapiData.data.tracking_response.tracking_results["x"];
     var startY = startapiData.data.tracking_response.tracking_results["y"];
-    // console.log("start: " + startX + ", " + startY);
-    limiter = 0;
-    
-    // board.canDraw = startapiData.data.tracking_response.tracking_results["draw"];
-    // console.log(board.canDraw)
 
     // Main while loop to draw
     while (board.canDraw) {
       var nextapiData = await getapiData();
-      // console.log(nextapiData);
       var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
       var nextX = nextapiData.data.tracking_response.tracking_results["x"];
       var nextY = nextapiData.data.tracking_response.tracking_results["y"];
-      set_cursor(nextX, nextY);
-      // console.log("next: " + nextX + ", " + nextY);
-      
+      set_cursor(nextX, nextY);      
       drawLine(startX, startY, nextX, nextY)
-      
       startX = nextX;
       startY = nextY;
     }
@@ -352,4 +341,3 @@ function drawLine(x_start, y_start, x_end, y_end) {
   context.stroke();
   context.closePath();
 }
-///////////////////////////////////// webcam drawing /////////////////////////////////////
