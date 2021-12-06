@@ -29,32 +29,23 @@ def home():
     # GET method
     if request.method == 'GET':
         query = request.args
-        getTraceData = getTemplatePath = isOff = None
-        if "getTraceData" in query:
-            getTraceData = query["getTraceData"]
+        getTemplatePath = isOff = None
+        response = {}
 
         if "getTemplatePath" in query:
             getTemplatePath = query["getTemplatePath"]
+            response["template_response"] = asyncio.run(build_template_response(getTemplatePath))
 
         if "isOff" in query:
             isOff = query["isOff"]
-
-        response = {}
-
-        if getTraceData == "true":
-            response["tracing_response"] = asyncio.run(build_tracing_response())
-
-        if getTemplatePath is not None:
-            response["template_response"] = asyncio.run(build_template_response(getTemplatePath))
-
-        if isOff == "false" or None:
-            response["tracking_response"] = asyncio.run(build_tracking_response())
+            if isOff == "false" or None:
+                response["tracking_response"] = asyncio.run(build_tracking_response())
         
         return json.dumps(response), {"Content-Type": "application/json"}
 
     if request.method == 'POST':
         query = json.loads(request.data.decode('utf-8'))
-        postTemplatePath = file = None
+        postTemplatePath = file = kill = None
         response = {}
 
         if "postTemplatePath" in query:
