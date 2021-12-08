@@ -87,3 +87,30 @@
     border-radius: 4px;
 }
 
+#buttons li {
+    list-style: none;
+    text-align: center;
+    border-radius: 20px;
+    background-color: #9900ff;
+    color: white;
+    font-size: 18px;
+    margin-left:auto;
+    margin-right:auto;
+    width: 150px;
+    line-height: 60px;
+    text-decoration: none;
+  }
+
+  #buttons li a {
+    text-decoration: none;
+    color: #FFFFFF;
+    display: block;
+    border-radius: 20px;
+  }
+
+  #buttons li a:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #cc80ff;
+    border-radius: 20px;
+  }
