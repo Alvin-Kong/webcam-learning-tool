@@ -7,9 +7,8 @@ let allBtn = document.querySelectorAll(".btn");
 let colorInput = document.querySelector("#color");
 let downloadBtn = document.querySelector(".download");
 let cursor = document.getElementById("cursor");
-let background_color = "white";
- 
 let cursorOn = false;
+const api_url = 'http://127.0.0.1:5000/';
 
 
 // record  x and y coordinates point of brush
@@ -51,12 +50,10 @@ var board = {
     y = e.pageY - canvas.offsetTop;
     context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight)
     if(board.imageData!=null){
-      context.putImageData(restore_array[index],0,0);
-      // context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
+      context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
     }
     context.beginPath()
     context.rect(board.beginX,board.beginY,x-board.beginX,y-board.beginY);
-    
     context.strokeStyle = board.color;
     context.stroke()
     context.closePath()
@@ -69,8 +66,7 @@ var board = {
     y = e.pageY - canvas.offsetTop;
     context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight)
     if(board.imageData!=null){
-      context.putImageData(restore_array[index],0,0);
-      // context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
+      context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
     }
     context.beginPath()
     var radius = 2000; // set default radius to start with
@@ -197,11 +193,10 @@ canvas.addEventListener("mousemove", function (e) {
 canvas.addEventListener("mouseup", function (e) {
   board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight)
   board.canDraw = false;
- 
+
   if(board.type == "brush"){
     context.closePath();
   }
-  
 
   if(e.type == 'mouseup'){
     restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
@@ -212,11 +207,10 @@ canvas.addEventListener("mouseup", function (e) {
 
 //clear canvas function
 function clear_canvas() {
-  context.fillStyle = background_color;
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.fillRect(0, 0, canvas.width, canvas.height);
   restore_array = [];
   index = -1;
+  board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
 };
 
 //undo drawings function
@@ -227,7 +221,7 @@ function undo_last(){
     index -= 1;
     restore_array.pop();
     context.putImageData(restore_array[index],0,0);
-    
+    board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
   }
 }
 
@@ -255,7 +249,6 @@ function set_cursor(x, y) {
 
 
 // Function to get data from local API
-const api_url = 'http://127.0.0.1:5000/';
 async function getData() {
     let response = await axios.get(api_url, {
       params: {
@@ -331,8 +324,8 @@ document.addEventListener('keypress', event => {
     board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
     board.canDraw = false;
     cursorOn = false;
-
     restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    index+=1;
     console.log("Drawing Stop")
   }
 });

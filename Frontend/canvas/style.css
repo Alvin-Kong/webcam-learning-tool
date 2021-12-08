@@ -3,24 +3,23 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-canvas {
+#canvas {
     /* flex: 1; */
     border: 1px solid black;  
+    margin-left: 2px;
 }
 
 .rmenu {
-    display:table;
+    display: table;
     margin: 3px 3px 0px 0;
     padding: 1px;
     vertical-align: top;
-    align-items: right; /*evenly distribute the space*/
+    align-items: right;
     float: right;
     left: 850px;
     top: 10px;
     text-align: right;
 }
-
 
 .rmenu-table-cell {
     position: absolute;
@@ -36,36 +35,25 @@ canvas {
     height: 100px;
     width: 800px; 
     display: flex;
-    border-bottom: 3px solid #ccc;
+    border-bottom: 3px solid white;
     justify-content: space-around;
     align-items: left; /* evenly distribute the space*/
 }
 
-.btn{
-    width: 100px;
+.btn {
+    width: 90px;
     height: 50px;
     border: 1px solid #9900ff;
     border-radius: 20px;
     text-align: center;
     line-height: 50px;
     background-color: white;
-    color: #9900ff; 
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: auto 100%;
-}
-.btn1{
-    width: 100px;
-    height: 50px;
-    border: 1px solid #9900ff;
-    border-radius: 20px;
-    text-align: center;
-    line-height: 50px;
     color: #9900ff;
     background-position: center;
     background-repeat: no-repeat;
     background-size: auto 100%;
 }
+
 .btn.active {
     box-shadow: 0 0 20px #9900ff;
     border: 1px solid #9900ff;
@@ -104,3 +92,31 @@ canvas {
     border-radius: 4px;
 }
 
+#buttons li {
+    list-style: none;
+    text-align: center;
+    border-radius: 20px;    
+    background-color: #9900ff;
+    color: white; 
+    font-size: 18px;
+    margin-left:auto;
+    margin-right:auto;
+    width: 150px;
+    line-height: 60px;
+    text-decoration: none;
+    position: absolute;
+  }
+
+  #buttons li a {
+    text-decoration: none;
+    color: #FFFFFF;
+    display: block;
+    border-radius: 20px;   
+  }
+  
+  #buttons li a:hover {
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #cc80ff;
+    border-radius: 20px;   
+  }

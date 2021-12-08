@@ -310,8 +310,8 @@ document.addEventListener('keypress', event => {
     board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
     board.canDraw = false;
     cursorOn = false;
-
     restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    index+=1;
     console.log("Drawing Stop")
   }
 });
