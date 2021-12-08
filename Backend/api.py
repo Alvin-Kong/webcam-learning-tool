@@ -62,17 +62,9 @@ def home():
     else:
         return json.dumps(generateError("Request method not recognized. Please use 'GET' or 'POST' only.")), 300, {
             "Content-Type": "application/json"}
-# ====================================================================================================================
 
 
-# Test if any argument is equal to None
-def is_any_none(*argv):
-    for arg in argv:
-        if arg == None:
-            return True
-    return False
-
-
+# ================================================== Error Handling ==================================================
 # Generate an JSON error response
 def generateError(reason):
     return {
@@ -85,7 +77,7 @@ def generateError(reason):
     }
 
 
-# ============================================== build response methods ==============================================
+# ============================================== Build Response Methods ==============================================
 # Build a tracing response to send to the client
 async def build_tracing_response():
     response = {}
@@ -105,10 +97,9 @@ async def build_tracking_response():
     response = {}
     response["tracking_results"] = await get_position()
     return response
-# ====================================================================================================================
 
 
-# ==================================================== get methods ====================================================
+# ==================================================== Get Methods ====================================================
 # Function to build a json response containing the returned data from tracing.py's trace method
 async def get_tracing_stats(f):
     response = {}
@@ -137,7 +128,6 @@ async def get_position():
 
 # =====================================================================================================================
 # ================================================= Object Tracker ====================================================
-
 # Class for the object tracker
 class ObjectTracker():
     def __init__(self, capture, ret, frame, bbox, tracker, draw):

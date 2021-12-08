@@ -1,27 +1,37 @@
+//get all selectors 
 let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
-let reSetCanvas = document.getElementById("clear");
-let eraser = document.getElementById("eraser");
+let reSetCanvas = document.getElementById("#clear");
+let undo = document.getElementById("#undo");
 let allBtn = document.querySelectorAll(".btn");
+let colorInput = document.querySelector("#color");
+let downloadBtn = document.querySelector(".download");
+let cursor = document.getElementById("cursor");
+let background_color = "white";
+let cursorOn = false;
 
-// When true, canvas starts drawing
-let canDraw = false;
-let canErase = false;
-// record last point of brush
+
+// record  x and y coordinates point of brush
 var x = 0;
 var y = 0;
 
+//define array to store record of drawing
+let restore_array = [];
+let index = -1;
+let limiter = 0;
 
+//drawing board function
 var board = {
   type: "none",
   canDraw: false,
-  canErase: false,
+  canUndo: false,
   beginX:0,
   beginY:0,
   lineWidth:2,
   imageData:null,
   color:"#000",
-  //brush begin
+
+  //brush function start
   brushFn:function(e){
     x = e.pageX - canvas.offsetLeft;
     y = e.pageY - canvas.offsetTop;
@@ -31,32 +41,49 @@ var board = {
     context.lineCap = "round"; //Set line end style
     context.lineJoin = "round"; //Set line intersection style
     context.stroke()
-      // drawLine(context, x, y, e.offsetX, e.offsetY);
-      // x = e.offsetX;
-      // y = e.offsetY;
-    
   },
-  //brush end
+  //brush function end
 
-  //rectangle start 
+  //rectangle function start
   rectFn:function(e){
     x = e.pageX - canvas.offsetLeft;
     y = e.pageY - canvas.offsetTop;
     context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight)
     if(board.imageData!=null){
-      context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
+      context.putImageData(restore_array[index],0,0);
+      // context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
     }
     context.beginPath()
     context.rect(board.beginX,board.beginY,x-board.beginX,y-board.beginY);
     context.strokeStyle = board.color;
     context.stroke()
     context.closePath()
-  }
-  //rectangle end
+  },
+  //rectangle function end
 
-  
+  //arc function start
+  arcFn:function(e){
+    x = e.pageX - canvas.offsetLeft;
+    y = e.pageY - canvas.offsetTop;
+    context.clearRect(0,0,canvas.offsetWidth,canvas.offsetHeight)
+    if(board.imageData!=null){
+      context.putImageData(restore_array[index],0,0);
+      // context.putImageData(board.imageData,0,0,0,0,canvas.offsetWidth,canvas.offsetHeight)
+    }
+    context.beginPath()
+    var radius = 2000; // set default radius to start with
+    var radiusX = Math.min(x-board.beginX, radius); // set horizontal radius to be atleast as wide as width of div
+    var radiusY = Math.min(y-board.beginY, radius); // set vertical radius to be atleast as high as height of div
+    radius = Math.min(radiusX, radiusY); // now set the radius of the circle equal to the minimum of the two values so that it is a perfect circle
+    context.arc(x,y,radius,0, 2 * Math.PI,false);
+    context.strokeStyle = board.color;
+    context.stroke()
+    context.closePath()
+  }
+  //arc function end 
 };
 
+ 
 //brush button
 var brushBtn = document.querySelector("#brush");
 brushBtn.onclick = function () {
@@ -79,6 +106,17 @@ rectBtn.onclick = function(){
   board.type = "rect"
 }
 
+//arc button
+var arcBtn = document.querySelector("#arc")
+arcBtn.onclick = function(){
+
+  allBtn.forEach(function(item,i){
+    item.classList.remove("active")
+  })
+  arcBtn.classList.add("active");
+  board.type = "arc"
+}
+
 //buttons to set thin, thick, normal 
 var lineDivs = document.querySelectorAll(".line")
 lineDivs.forEach(function(item,i){
@@ -97,9 +135,21 @@ lineDivs.forEach(function(item,i){
   }
 })
 
-var colorInput = document.querySelector("#color")
+//color panel
 colorInput.onchange = function(e){
 board.color = colorInput.value;
+}
+
+//download button
+downloadBtn.onclick = function(){
+  var url = canvas.toDataURL()
+  console.log(url);
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.href = canvas.toDataURL();
+  a.download = "canvas-image.png";
+  a.click();
+  document.body.removeChild(a);
 }
 
 // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas
@@ -124,6 +174,15 @@ canvas.addEventListener("mousedown", function (e) {
     context.moveTo(x,y)
   }
 
+  if(board.type == "arc"){
+    x = e.pageX - canvas.offsetLeft;
+    y = e.pageY - canvas.offsetTop;
+    board.beginX = x;
+    board.beginY = y;
+    context.beginPath()
+    context.moveTo(x,y)
+  }
+
 });
 
 canvas.addEventListener("mousemove", function (e) {
@@ -136,50 +195,155 @@ canvas.addEventListener("mousemove", function (e) {
 canvas.addEventListener("mouseup", function (e) {
   board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight)
   board.canDraw = false;
-
+ 
   if(board.type == "brush"){
     context.closePath();
+  }
+  
+
+  if(e.type == 'mouseup'){
+    restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    index+=1;
+    console.log(restore_array);
+  } 
+});
+
+//clear canvas function
+function clear_canvas() {
+  context.fillStyle = background_color;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  restore_array = [];
+  index = -1;
+};
+
+//undo drawings function
+function undo_last(){
+  if(index <= 0){
+    clear_canvas();
+  }else{
+    index -= 1;
+    restore_array.pop();
+    context.putImageData(restore_array[index],0,0);
+  }
+}
+
+
+// set webcam canvas cursor
+function set_cursor(x, y) {
+  var left = x - 8;
+  var top = y - 8;
+
+  if (left < 3) {
+      left = 3;
+  }
+  if (left > 787) {
+      left = 787;
+  }
+  if (top < 1) {
+      top = 1;
+  }
+  if (top > 585) {
+      top = 585;
+  }
+  cursor.style.left = left + "px";
+  cursor.style.top = top + "px";
+}
+
+
+// Function to get data from local API
+const api_url = 'http://127.0.0.1:5000/';
+async function getData() {
+    let response = await axios.get(api_url, {
+      params: {
+        isOff: false,
+      }
+  })
+    .catch(function(error) {
+        console.log(error);
+        alert(error);
+    });
+    return response;
+}
+
+
+// Helper Function to translate a Promise response from API to JSON data
+async function getapiData() {
+  var apiData = await getData();
+  return apiData;
+}
+
+
+// Function to test whether API data can be retrieved
+// Press N to get sample API data   
+document.addEventListener('keypress', async event => {
+  if (event.code === 'KeyN') {
+    var data = await getapiData();
+    console.log(data);
+  }
+})
+
+
+document.addEventListener('keypress', async event => {
+  if (event.code === 'KeyM') {
+    cursorOn = true;
+    while(cursorOn) {
+      var data = await getapiData();
+      var x = data.data.tracking_response.tracking_results["x"];
+      var y = data.data.tracking_response.tracking_results["y"];
+      set_cursor(x, y);
+    }
+  }
+})
+
+
+// Main drawing functionality
+document.addEventListener('keypress', async (e) => {
+  if ((e).code === 'Enter') {
+    board.canDraw = true;
+    console.log("Drawing Start")
+    var startapiData = await getapiData();
+    var startCenter = startapiData.data.tracking_response.tracking_results["center"];
+    var startX = startapiData.data.tracking_response.tracking_results["x"];
+    var startY = startapiData.data.tracking_response.tracking_results["y"];
+
+    // Main while loop to draw
+    while (board.canDraw) {
+      var nextapiData = await getapiData();
+      var nextCenter = nextapiData.data.tracking_response.tracking_results["center"];
+      var nextX = nextapiData.data.tracking_response.tracking_results["x"];
+      var nextY = nextapiData.data.tracking_response.tracking_results["y"];
+      set_cursor(nextX, nextY);      
+      drawLine(startX, startY, nextX, nextY)
+      startX = nextX;
+      startY = nextY;
+    }
   }
 });
 
 
-//clear canvas
-reSetCanvas.onclick = function () {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-};
+// Press 'Space' key to stop drawing and exit out of while loop
+document.addEventListener('keypress', event => {
+  if (event.code === 'Space') {
+    board.imageData = context.getImageData(0,0,canvas.offsetWidth,canvas.offsetHeight);
+    board.canDraw = false;
+    cursorOn = false;
 
-//erase drawings
-eraser.onclick = function () {
-  canErase = true;
-  eraser.classList.add("active");
-  brush.classList.remove("active");
-};
-
-
+    restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
+    console.log("Drawing Stop")
+  }
+});
 
 
-
-
-//request and response of center point
-function getCenter() {
-  const express = require("express");
-  const { spawn } = require("child_process");
-  const app = express();
-  const port = 5000;
-
-  app.get("/", (req, res) => {
-    var dataset = [];
-    const python = spawn("python", ["../Backend/get_center.py"]);
-    python.stdout.on("data", function (data) {
-      console.log("Pipe data from python scrupt ...");
-      dataset.push(data);
-    });
-
-    python.on("close", (code) => {
-      console.log(`child process close all stdio with code ${code}`);
-      res.send(dataset.join(""));
-    });
-  });
-
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+// Function to create drawing lines
+function drawLine(x_start, y_start, x_end, y_end) {
+  context.beginPath();
+  context.moveTo(x_start, y_start);
+  context.lineTo(x_end, y_end);
+  context.strokeStyle = board.color;
+  context.lineWidth = board.lineWidth;
+  context.lineCap = "round"; //Set line end style
+  context.lineJoin = "round"; //Set line intersection style
+  context.stroke();
+  context.closePath();
 }
