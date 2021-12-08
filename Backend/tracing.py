@@ -41,7 +41,7 @@ def qualityBracket(percentage):
         return 2
 
 
-#  b64
+#  Main tracing algorithm, given the template file path, and imageURL data
 def trace(template, b64):
     try:
         path = generatePath()
@@ -70,92 +70,6 @@ def trace(template, b64):
         traced_count = np.sum(traced != 255)
         diff_count = np.sum(diff != 0)
         error_val = 10
-
-        added_image = cv2.addWeighted(original, 0.4, traced, 0.1, 0)
-        #cv2.imshow("overlay", added_image)
-
-        #cv2.imshow("trace", traced)
-        #cv2.imshow("difference", diff)
-        #cv2.imshow("original", original)
-
-        percentage = (1 - (diff_count / original_count)) * 100 + error_val
-        if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
-            return qualityBracket(0), 0
-        else:
-            if percentage >= 100:
-                return qualityBracket(100), 100
-            else:
-                return qualityBracket(percentage), round(percentage)
-    except Exception as e:
-        print(e)
-
-
-# Function that is called from the API that will compare two png files within the directory
-# Arguments are two string values for the image name
-def trace_old(originalImage, tracedImage):
-    try:
-        path = generatePath()
-        pathOriginal = os.path.join(path, "Original")
-        pathOriginal2 = os.path.join(pathOriginal, originalImage)
-
-        original = cv2.imread(pathOriginal2 + ".png")
-
-        pathTrace = os.path.join(path, "Traced")
-        pathTraced = os.path.join(pathTrace, tracedImage)
-
-        print(pathTraced)
-        print()
-        print(b64)
-        tracedImage = open(pathTraced + "1.png", 'wb')
-        tracedImage.write(b64)
-        tracedImage.close()
-        print("REACHED")
-        newTest = cv2.imread(pathTraced + "1.png", cv2.IMREAD_UNCHANGED)
-        print(type(newTest))
-        cv2.imshow("TEST", newTest)
-
-        print(pathTrace + "canvas-image.png")
-        traced = cv2.imread(pathTrace + "\canvas-image.png", cv2.IMREAD_UNCHANGED)
-
-        print(type(traced))
-
-        # make mask of where the transparent bits are
-        mask = traced[:, :, 3] == 0
-        # replace areas of transparency with white and not transparent
-        traced[mask] = [255, 255, 255, 255]
-
-        # new image without alpha channel...
-        traced = cv2.cvtColor(traced, cv2.COLOR_BGRA2BGR)
-
-        # make mask of where the transparent bits are
-        mask = newTest[:, :, 3] == 0
-        # replace areas of transparency with white and not transparent
-        newTest[mask] = [255, 255, 255, 255]
-
-        # new image without alpha channel...
-        newTest = cv2.cvtColor(newTest, cv2.COLOR_BGRA2BGR)
-        cv2.imshow("TEST", newTest)
-
-        # original = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Original/index.png")
-        # traced = cv2.imread("c:/Users/alvin/webcam-learning-tool/Backend/tracing/Traced/indexTraced3.png")
-        # original = cv2.imread("tracing/Original/" + originalImage + ".png")
-        # traced = cv2.imread("tracing/Traced/" + tracedImage + ".png")
-        validateImages(original, traced)
-
-        # removeOutline(traced)
-        diff = cv2.subtract(original, traced)
-
-        original_count = np.sum(original == 0)
-        traced_count = np.sum(traced != 255)
-        diff_count = np.sum(diff != 0)
-
-        print(original_count)
-        print(traced_count)
-        print(diff_count)
-        error_val = 0
-
-        added_image = cv2.addWeighted(original, 0.4, traced, 0.1, 0)
-        cv2.imshow("overlay", added_image)
 
         cv2.imshow("trace", traced)
         cv2.imshow("difference", diff)
@@ -258,6 +172,7 @@ def getShape(path):
     return shapes[index]
 
 
+# Dynamically generates the file path to the project folder
 def generatePath():
     path = pathlib.Path().resolve()
     if not str(path).__contains__("webcam-learning-tool"):
