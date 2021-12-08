@@ -1,5 +1,6 @@
 # webcam-learning-tool
 A learning tool that allows the user to utilize their webcams to draw and annotate on an open canvas.
+(May not work on macOS, but will work on Windows)
 
 Install Python (either 3.x or 2.7.x)
 
