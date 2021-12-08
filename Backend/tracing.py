@@ -71,10 +71,6 @@ def trace(template, b64):
         diff_count = np.sum(diff != 0)
         error_val = 10
 
-        cv2.imshow("trace", traced)
-        cv2.imshow("difference", diff)
-        cv2.imshow("original", original)
-
         percentage = (1 - (diff_count / original_count)) * 100 + error_val
         if traced_count / original_count < 0.5 or traced_count / original_count > 1.5:
             return qualityBracket(0), 0
