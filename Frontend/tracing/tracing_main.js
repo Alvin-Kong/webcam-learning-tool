@@ -282,7 +282,9 @@ document.addEventListener('keypress', async event => {
 document.addEventListener('keypress', async (e) => {
   if ((e).code === 'Enter') {
     board.canDraw = true;
-    console.log("Drawing Start")
+    canvas.requestPointerLock();
+    document.getElementById("alert").style.display='block';
+    console.log("Drawing Start");
     var startapiData = await getapiData();
     var startCenter = startapiData.data.tracking_response.tracking_results["center"];
     var startX = startapiData.data.tracking_response.tracking_results["x"];
@@ -312,6 +314,8 @@ document.addEventListener('keypress', event => {
     cursorOn = false;
     restore_array.push(context.getImageData(0,0,canvas.width,canvas.height));
     index+=1;
+    document.exitPointerLock();
+    document.getElementById("alert").style.display='none';
     console.log("Drawing Stop")
   }
 });

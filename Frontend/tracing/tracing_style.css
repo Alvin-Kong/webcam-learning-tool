@@ -100,18 +100,24 @@
     line-height: 60px;
     text-decoration: none;
     position: absolute;
-  }
+}
 
-  #buttons li a {
+#buttons li a {
     text-decoration: none;
     color: #FFFFFF;
     display: block;
     border-radius: 20px;
-  }
+}
 
-  #buttons li a:hover {
+#buttons li a:hover {
     text-decoration: none;
     color: #ffffff;
     background-color: #cc80ff;
     border-radius: 20px;
-  }
+}
+
+
+#alert {
+    text-align: left;
+    color: #ff0000;
+}
